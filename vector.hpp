@@ -6,14 +6,12 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/10/29 00:14:02 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/10/31 21:52:36 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_H
 # define VECTOR_H
-
-# include <iostream>
 
 # include <memory>
 # include "Additional/enable_if.hpp"
@@ -100,21 +98,25 @@ public:
 	template <typename Iterator>
 	void		assign(Iterator first, Iterator last);
 	void		assign(size_type n, const value_type& val);
-	void		push_back (const value_type& val);
+	void		push_back(const value_type& val);
 	void		pop_back(void);
 	template <typename Iterator>
-	void		insert (iterator position, Iterator first, Iterator last);
-	iterator	insert (iterator position, const value_type& val);
-    void		insert (iterator position, size_type n, const value_type& val);
-	iterator 	erase (iterator position);
-	iterator 	erase (iterator first, iterator last);
-	void clear(void);
+	void		insert(iterator position, Iterator first, Iterator last);
+	iterator	insert(iterator position, const value_type& val);
+    void		insert(iterator position, size_type n, const value_type& val);
+	iterator 	erase(iterator position);
+	iterator 	erase(iterator first, iterator last);
+	void		swap(vector& other);
+	void		clear(void);
 
 	/* ALLOCATOR */
 
 	allocator_type	get_allocator(void) const;
 
 	/* NON-MEMBER FUNCTION OVERLOADS */
+
+	template <typename Y, typename Alloc>
+	friend void swap(vector<Y, Alloc>& lhs, vector<Y, Alloc>& rhs);
 
 private:
 	size_type	_size;
@@ -166,15 +168,14 @@ vector<T, Allocator>::vector(size_type n, const value_type& val, const allocator
 /* RANGE CONSTRUCTOR */
 template <typename T, typename Allocator>
 template <typename InputIterator>
-vector<T, Allocator>::vector(InputIterator first, InputIterator last, const allocator_type& alloc) : _size(0), _alloc(alloc) {
+vector<T, Allocator>::vector(InputIterator first, InputIterator last, const allocator_type& alloc) : _size(0), _alloc(alloc), _capacity(0), _pointer(nullptr) {
 	typedef typename ft::is_integral<InputIterator>::type _Integer;
 	__construct(first, last, _Integer());
 }
 
 /* COPY CONSTRUCTOR */
 template <typename T, typename Allocator>
-vector<T, Allocator>::vector(const vector& other) {
-	_pointer = nullptr;
+vector<T, Allocator>::vector(const vector& other) : _pointer(nullptr) {
 	*this = other;
 }
 
@@ -277,8 +278,7 @@ typename vector<T, Allocator>::size_type vector<T, Allocator>::size(void) const 
 
 template <typename T, typename Allocator>
 typename vector<T, Allocator>::size_type vector<T, Allocator>::max_size(void) const {
-	return std::min(static_cast<size_type>(std::numeric_limits<difference_type>::max()
-		/ sizeof(value_type) * 2 + 1), static_cast<size_type>(std::numeric_limits<difference_type>::max()));
+	return _alloc.max_size() > __LONG_LONG_MAX__ ? __LONG_LONG_MAX__ : _alloc.max_size();
 }
 
 template <typename T, typename Allocator>
@@ -314,12 +314,13 @@ void vector<T, Allocator>::reserve(size_type n) {
 	if (n > _capacity) {
 		pointer copy = _alloc.allocate(n);
 
-		for (size_type i = 0; i < _size; ++i) {
-			_alloc.construct(&copy[i], _pointer[i]);
-			_alloc.destroy(&_pointer[i]);
-		}
-		if (_pointer)
+		if (_pointer) {
+			for (size_type i = 0; i < _size; ++i) {
+				_alloc.construct(&copy[i], _pointer[i]);
+				_alloc.destroy(&_pointer[i]);
+			}
 			_alloc.deallocate(_pointer, _capacity);
+		}
 		_pointer = copy;
 		_capacity = n;
 	}
@@ -423,10 +424,11 @@ void	vector<T, Allocator>::assign(size_type n, const value_type& val) {
 
 template <typename T, typename Allocator>
 void vector<T, Allocator>::push_back(const value_type& val) {
-	if (_size >= _capacity)
-		reserve(_capacity + _capacity / 2);
-	++_size;
-	_alloc.construct(&_pointer[_size - 1], val);
+	if (!_capacity)
+		reserve(1);
+	else if (_size >= _capacity)
+		reserve(_capacity * 2);
+	_alloc.construct(&_pointer[++_size - 1], val);
 }
 
 template <typename T, typename Allocator>
@@ -452,8 +454,8 @@ void vector<T, Allocator>::insert (iterator position, size_type n, const value_t
 	if (_size) {
 		for (size_type i = 0; i < n; ++i)
 			_alloc.construct(&_pointer[_size + n - 1 - i], _pointer[_size - 1 - i]);
-		for (difference_type i = n; i < after; ++i)
-			_pointer[_size - i] = _pointer[_size - i - 1];
+		for (difference_type i = 0; i < after; ++i)
+			_pointer[_size - 1 - i] = _pointer[_size - n - i - 1];
 		for (size_type i = 0; i < n; ++i)
 			_pointer[before + i] = val;
 	}
@@ -510,6 +512,17 @@ void vector<T, Allocator>::clear(void) {
 		_alloc.destroy(&_pointer[--_size]);
 }
 
+template <typename T, typename Allocator>
+void vector<T, Allocator>::swap(vector& other) {
+	pointer		p_copy = _pointer;
+	size_type	s_copy = _size;
+	size_type	c_copy = _capacity;
+
+	_pointer = other._pointer; other._pointer = p_copy;
+	_size = other._size; other._size = s_copy;
+	_capacity = other._capacity; other._capacity = c_copy;
+}
+
 /* <-- MODIFIERS END */
 
 /* ALLOCATOR START --> */
@@ -559,6 +572,17 @@ bool operator	>=	(const vector<T, Allocator>& lhs, const vector<T, Allocator>& r
 	return !(lhs < rhs);
 }
 
+template <typename Y, typename Alloc>
+void swap(vector<Y, Alloc>& lhs, vector<Y, Alloc>& rhs) {
+	typename vector<Y, Alloc>::pointer		p_copy = lhs._pointer;
+	typename vector<Y, Alloc>::size_type	s_copy = lhs._size;
+	typename vector<Y, Alloc>::size_type	c_copy = lhs._capacity;
+
+	lhs._pointer = rhs._pointer; rhs._pointer = p_copy;
+	lhs._size = rhs._size; rhs._size = s_copy;
+	lhs._capacity = rhs._capacity; rhs._capacity = c_copy;
+}
+
 
 /* <-- NON-MEMBER FUNCTION OVERLOADS END */
 
@@ -568,8 +592,6 @@ bool operator	>=	(const vector<T, Allocator>& lhs, const vector<T, Allocator>& r
 template <typename T, typename Allocator>
 template <typename _Integer>
 void vector<T, Allocator>::__construct(_Integer size, _Integer val, ft::true_type) {
-	_capacity = static_cast<size_type>(size);
-	_pointer = _alloc.allocate(_capacity);
 	__assign(size, val, ft::true_type());
 }
 
@@ -577,8 +599,6 @@ template <typename T, typename Allocator>
 template <typename _Iterator>
 void vector<T, Allocator>::__construct(_Iterator first, _Iterator last, ft::false_type) {
 	typedef typename std::iterator_traits<_Iterator>::iterator_category _Category;
-	_capacity = std::distance(first, last);
-	_pointer = _alloc.allocate(_capacity);
 	__assign_range(first, last, _Category());
 }
 
@@ -598,13 +618,12 @@ void	vector<T, Allocator>::__assign(_Iterator first, _Iterator last, ft::false_t
 template <typename T, typename Allocator>
 template <typename InputIterator>
 void	vector<T, Allocator>::__assign_range(InputIterator first, InputIterator last, std::input_iterator_tag) {
-	std::cout << "HERE" << std::endl;
-	for (; first != last && _size <= _capacity; ++_size, ++first)
+	for (; _capacity && first != last && _size <= _capacity; ++_size, ++first)
 		_alloc.construct(&_pointer[_size], *first);
-	if (first != last)
+	if (first == last && _size)
+		_alloc.destroy(&_pointer[_size]);
+	else
 		__insert_range(end(), first, last, std::input_iterator_tag());
-	// 	_alloc.destroy(&_pointer[_size]);
-	// else
 }
 
 template <typename T, typename Allocator>
@@ -655,8 +674,8 @@ void	vector<T, Allocator>::__insert_range(iterator position, ForwardIterator fir
 	if (_size) {
 		for (difference_type i = 0; i < n; ++i)
 			_alloc.construct(&_pointer[_size + n - 1 - i], _pointer[_size - 1 - i]);
-		for (difference_type i = n; i < after; ++i)
-			_pointer[_size - i] = _pointer[_size - i - 1];
+		for (difference_type i = 0; i < after; ++i)
+			_pointer[_size - 1 - i] = _pointer[_size - n - 1 - i];
 		for (difference_type i = 0; i < n; ++i)
 			_pointer[before + i] = *first++;
 	}
