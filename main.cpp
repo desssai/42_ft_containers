@@ -6,12 +6,12 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:57:17 by ncarob            #+#    #+#             */
-/*   Updated: 2022/10/28 15:35:38 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/02 21:48:38 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
-#if 1
+#if 0
 # include <vector>
 namespace ft = std ;
 #else 
@@ -19,7 +19,7 @@ namespace ft = std ;
 #endif
 
 int main (void) {
-	ft::vector<long>	vec;
+	ft::vector<int>	vec;
 	// ft::vector<long>	vec2(10, 66);
 
 	// for (size_t i = 0; i < 11; ++i)
@@ -38,18 +38,22 @@ int main (void) {
 	// it2 = vec.end();
 	// vec.insert(it1, 0);
 
-	vec.insert(vec.end(), 0, 0);
-	vec.insert(vec.begin(), 5, 1);
+    for (size_t i = 0; i < vec.max_size() / 2; ++i) {
+		vec.insert(vec.end(), rand());
+    }
+
+	// vec.insert(vec.end(), 0, 0);
+	// vec.insert(vec.begin(), 5, 1);
 
 	std::cout << vec.size() << std::endl;
 	std::cout << vec.capacity() << std::endl;
 
-	ft::vector<long>::iterator it3 = vec.begin();
-	ft::vector<long>::iterator it4 = vec.end();
+	// ft::vector<long>::iterator it3 = vec.begin();
+	// ft::vector<long>::iterator it4 = vec.end();
 
-	while (it3 != it4)
-		std::cout << *it3++ << " ";
-	std::cout << std::endl;
+	// while (it3 != it4)
+	// 	std::cout << *it3++ << " ";
+	// std::cout << std::endl;
 
 	// ft::iterator_traits<ft::VectorIterator<long> >::iterator_category();
 
