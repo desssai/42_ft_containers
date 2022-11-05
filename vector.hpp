@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/05 17:14:59 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/05 17:36:38 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,7 +393,8 @@ void vector<T, Allocator>::push_back(const value_type& val) {
 
 template <typename T, typename Allocator>
 void vector<T, Allocator>::pop_back(void) {
-	_alloc.destroy(&_pointer[--_size]);
+	if (_size)
+		_alloc.destroy(&_pointer[--_size]);
 }
 
 template <typename T, typename Allocator>
