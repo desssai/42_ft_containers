@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/02 22:14:18 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/05 17:14:59 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define VECTOR_H
 
 # include <memory>
+# include "Additional/equal.hpp"
 # include "Additional/enable_if.hpp"
 # include "Additional/is_integral.hpp"
 # include "Additional/iterator_traits.hpp"
@@ -60,15 +61,11 @@ public:
 	iterator				begin(void);
 	iterator				end(void);
 	const_iterator			begin(void) const;
-	const_iterator			cbegin(void) const;
 	const_iterator			end(void) const;
-	const_iterator			cend(void) const;
 	reverse_iterator		rbegin(void);
 	reverse_iterator		rend(void);
 	const_reverse_iterator	rbegin(void) const;
-	const_reverse_iterator	crbegin(void) const;
 	const_reverse_iterator	rend(void) const;
-	const_reverse_iterator	crend(void) const;
 
 	/* CAPACITY */
 
@@ -78,7 +75,6 @@ public:
 	size_type	capacity(void) const;
 	bool		empty(void) const;
 	void		reserve(size_type n);
-	void		shrink_to_fit(void);
 
 	/* ELEMENT ACCESS */
 
@@ -227,16 +223,6 @@ typename vector<T, Allocator>::const_iterator vector<T, Allocator>::end(void) co
 }
 
 template <typename T, typename Allocator>
-typename vector<T, Allocator>::const_iterator vector<T, Allocator>::cbegin(void) const {
-	return const_iterator(_pointer);
-}
-
-template <typename T, typename Allocator>
-typename vector<T, Allocator>::const_iterator vector<T, Allocator>::cend(void) const {
-	return const_iterator(_pointer + static_cast<difference_type>(_size));
-}
-
-template <typename T, typename Allocator>
 typename vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rbegin(void) {
 	return reverse_iterator(end());
 }
@@ -254,16 +240,6 @@ typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rbeg
 template <typename T, typename Allocator>
 typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rend(void) const {
 	return const_reverse_iterator(begin());
-}
-
-template <typename T, typename Allocator>
-typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::crbegin(void) const {
-	return const_reverse_iterator(cend());
-}
-
-template <typename T, typename Allocator>
-typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::crend(void) const {
-	return const_reverse_iterator(cbegin());
 }
 
 /* <-- ITERATORS END */
@@ -312,8 +288,7 @@ void vector<T, Allocator>::reserve(size_type n) {
 	if (n > max_size())
 		throw std::length_error("vector");
 	if (n > _capacity) {
-		size_type new_capacity = n * 100 > max_size() ? max_size() : n * 100;
-		pointer copy = _alloc.allocate(new_capacity);
+		pointer copy = _alloc.allocate(n);
 
 		if (_pointer) {
 			for (size_type i = 0; i < _size; ++i) {
@@ -323,23 +298,7 @@ void vector<T, Allocator>::reserve(size_type n) {
 			_alloc.deallocate(_pointer, _capacity);
 		}
 		_pointer = copy;
-		_capacity = new_capacity;
-	}
-}
-
-template <typename T, typename Allocator>
-void vector<T, Allocator>::shrink_to_fit(void) {
-	if (_size != _capacity) {
-		pointer copy = _alloc.allocate(_size);
-
-		for (size_type i = 0; i < _size; ++i) {
-			_alloc.construct(&copy[i], _pointer[i]);
-			_alloc.destroy(&_pointer[i]);
-		}
-		if (_pointer)
-			_alloc.deallocate(_pointer, _capacity);
-		_pointer = copy;
-		_capacity = _size;
+		_capacity = n;
 	}
 }
 
@@ -426,10 +385,10 @@ void	vector<T, Allocator>::assign(size_type n, const value_type& val) {
 template <typename T, typename Allocator>
 void vector<T, Allocator>::push_back(const value_type& val) {
 	if (!_capacity)
-		reserve(1);
-	else if (_size >= _capacity)
+		reserve(10);
+	else if (_size == _capacity)
 		reserve(_capacity * 2);
-	_alloc.construct(&_pointer[++_size - 1], val);
+	_alloc.construct(&_pointer[_size++], val);
 }
 
 template <typename T, typename Allocator>
@@ -539,13 +498,7 @@ typename vector<T, Allocator>::allocator_type vector<T, Allocator>::get_allocato
 
 template <class T, class Allocator>
 bool operator	==	(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) {
-	if (lhs.size() != rhs.size())
-		return false;
-	size_t j = lhs.size();
-	for (size_t i = 0; i < j; ++i)
-		if (lhs[i] != rhs[i])
-			return false;
-	return true;
+	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 template <class T, class Allocator>

@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 14:57:35 by ncarob            #+#    #+#             */
-/*   Updated: 2022/10/27 02:08:52 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/05 17:13:52 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ public:
 
 protected:
 	iterator_type _base;
-
 };
 
 template <typename Iterator, typename Container>
@@ -161,6 +160,8 @@ template <typename Iterator, typename Container>
 const Iterator& normal_iterator<Iterator, Container>::base(void) const {
 	return _base;
 }
+
+/* NON-MEMBER OPERATORS */
 
 template <typename Iterator, typename Container> 
 bool operator == (const normal_iterator<Iterator, Container>& lhs, const normal_iterator<Iterator, Container>& rhs) {

@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 14:56:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/10/27 02:14:48 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/05 17:13:31 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ class reverse_iterator {
 
 private:
 	typedef typename ft::iterator_traits<Iterator>		traits_type;
+
 public:
 	typedef typename traits_type::iterator_category		iterator_category;
 	typedef typename traits_type::difference_type		difference_type;
@@ -79,6 +80,8 @@ reverse_iterator<Iterator>::reverse_iterator(const reverse_iterator<Iter>& other
 
 template <typename Iterator>
 reverse_iterator<Iterator>::~reverse_iterator() {}
+
+/* MEMBER OPERATORS */
 
 template <typename Iterator>
 reverse_iterator<Iterator>& reverse_iterator<Iterator>::operator = (const reverse_iterator& other) {
@@ -165,6 +168,7 @@ typename reverse_iterator<Iterator>::reference reverse_iterator<Iterator>::opera
 	return _base[-n-1];
 }
 
+/* NON-MEMBER OPERATORS */
 
 template <typename Iterator> 
 bool operator == (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) {
