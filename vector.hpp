@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/05 17:36:38 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/06 21:13:51 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,7 +287,7 @@ template <typename T, typename Allocator>
 void vector<T, Allocator>::reserve(size_type n) {
 	if (n > max_size())
 		throw std::length_error("vector");
-	if (n > _capacity) {
+	else if (n > _capacity) {
 		pointer copy = _alloc.allocate(n);
 
 		if (_pointer) {
@@ -415,8 +415,8 @@ void vector<T, Allocator>::insert (iterator position, size_type n, const value_t
 	if (_size) {
 		for (size_type i = 0; i < n; ++i)
 			_alloc.construct(&_pointer[_size + n - 1 - i], _pointer[_size - 1 - i]);
-		for (difference_type i = 0; i < after; ++i)
-			_pointer[_size - 1 - i] = _pointer[_size - n - i - 1];
+		for (difference_type i = 1; i < after; ++i)
+			_pointer[_size - i] = _pointer[_size - n - i];
 		for (size_type i = 0; i < n; ++i)
 			_pointer[before + i] = val;
 	}
@@ -499,6 +499,8 @@ typename vector<T, Allocator>::allocator_type vector<T, Allocator>::get_allocato
 
 template <class T, class Allocator>
 bool operator	==	(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) {
+	if (lhs.size() != rhs.size())
+		return false;
 	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
@@ -629,8 +631,8 @@ void	vector<T, Allocator>::__insert_range(iterator position, ForwardIterator fir
 	if (_size) {
 		for (difference_type i = 0; i < n; ++i)
 			_alloc.construct(&_pointer[_size + n - 1 - i], _pointer[_size - 1 - i]);
-		for (difference_type i = 0; i < after; ++i)
-			_pointer[_size - 1 - i] = _pointer[_size - n - 1 - i];
+		for (difference_type i = 1; i < after; ++i)
+			_pointer[_size - i] = _pointer[_size - n - i];
 		for (difference_type i = 0; i < n; ++i)
 			_pointer[before + i] = *first++;
 	}
