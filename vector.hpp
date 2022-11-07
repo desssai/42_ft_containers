@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/06 21:13:51 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/07 20:42:19 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,6 @@ vector<T, Allocator>&	vector<T, Allocator>::operator = (const vector& other) {
 
 /* <-- CONSTRUCTORS AND DESTRUCTOR END */
 
-
 /* ITERATORS START --> */
 
 template <typename T, typename Allocator>
@@ -243,7 +242,6 @@ typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rend
 }
 
 /* <-- ITERATORS END */
-
 
 /* CAPACITY START --> */
 
@@ -303,7 +301,6 @@ void vector<T, Allocator>::reserve(size_type n) {
 }
 
 /* <-- CAPACITY END */
-
 
 /* ELEMENT ACCESS START --> */
 
@@ -406,17 +403,26 @@ void vector<T, Allocator>::insert (iterator position, Iterator first, Iterator l
 
 template <typename T, typename Allocator>
 void vector<T, Allocator>::insert (iterator position, size_type n, const value_type& val) {
-	difference_type	before = position - begin();
-	difference_type	after = end() - position;
-	
+	size_type	before = position - begin();
+
 	if (!n)
 		return ;
-	reserve(_size + n);
+	if (_size + n > _capacity)
+		reserve(_size + n > _capacity * 2 ? _size + n : _capacity * 2);
 	if (_size) {
-		for (size_type i = 0; i < n; ++i)
-			_alloc.construct(&_pointer[_size + n - 1 - i], _pointer[_size - 1 - i]);
-		for (difference_type i = 1; i < after; ++i)
-			_pointer[_size - i] = _pointer[_size - n - i];
+		size_type i = _size + n - 1;
+		size_type j = _size - 1;
+		
+		while (i >= _size && j > 0)
+			_alloc.construct(&_pointer[i--], _pointer[j--]);
+		if (i >= _size && j == 0)
+			_alloc.construct(&_pointer[i--], _pointer[j]);
+		while (i >= _size)
+			_alloc.construct(&_pointer[i--], value_type());
+		while (i >= before && j > 0)
+			_pointer[i--] = _pointer[j--];
+		if (i >= before && j == 0)
+			_pointer[i--] = _pointer[j];
 		for (size_type i = 0; i < n; ++i)
 			_pointer[before + i] = val;
 	}
@@ -429,19 +435,19 @@ void vector<T, Allocator>::insert (iterator position, size_type n, const value_t
 template <typename T, typename Allocator>
 typename vector<T, Allocator>::iterator vector<T, Allocator>::insert (iterator position, const value_type& val) {
 	difference_type	before = position - begin();
-	difference_type	after = end() - position;
 
-	reserve(_size + 1);
-	if (_size) {
+	if (_size == _capacity)
+		reserve(_capacity ? _capacity * 2 : 1000);
+	if (!_size)
+		_alloc.construct(_pointer, val);
+	else {
 		_alloc.construct(&_pointer[_size], _pointer[_size - 1]);
-		for (difference_type i = 1; i < after; ++i)
-			_pointer[_size - i] = _pointer[_size - 1 - i];
+		for (difference_type i = _size - 1; i >= before && i > 0; --i)
+			_pointer[i] = _pointer[i - 1];
 		_pointer[before] = val;
 	}
-	else
-		_alloc.construct(_pointer, val);
 	++_size;
-	return vector<T, Allocator>::iterator(&_pointer[before]);
+	return iterator(&_pointer[before]);
 }
 
 template <typename T, typename Allocator>
@@ -456,13 +462,13 @@ typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(iterator pos
 
 template <typename T, typename Allocator>
 typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(iterator first, iterator last) {
-	difference_type	move_diff = (end() - last);
+	difference_type	move_diff = end() - last;
 	difference_type erase_diff = last - first;
 	for (difference_type i = 0; i < move_diff; ++i)
 		*(first + i) = *(last + i);
 	for (difference_type i = 0; i < erase_diff; ++i) {
 		_alloc.destroy(&*(first + move_diff + i));
-		_size--;
+		--_size;
 	}
 	return (first + move_diff);
 }
@@ -540,9 +546,7 @@ void swap(vector<Y, Alloc>& lhs, vector<Y, Alloc>& rhs) {
 	lhs._capacity = rhs._capacity; rhs._capacity = c_copy;
 }
 
-
 /* <-- NON-MEMBER FUNCTION OVERLOADS END */
-
 
 /* PRIVATE FUNCTIONS START --> */
 
@@ -622,23 +626,28 @@ template <typename T, typename Allocator>
 template <typename ForwardIterator>
 void	vector<T, Allocator>::__insert_range(iterator position, ForwardIterator first, ForwardIterator last, std::forward_iterator_tag) {
 	difference_type	before = position - begin();
-	difference_type	after = end() - position;
 	difference_type	n = std::distance(first, last);
+	difference_type d_size = static_cast<difference_type>(_size);
 
 	if (!n)
 		return ;
 	reserve(_size + n);
 	if (_size) {
-		for (difference_type i = 0; i < n; ++i)
-			_alloc.construct(&_pointer[_size + n - 1 - i], _pointer[_size - 1 - i]);
-		for (difference_type i = 1; i < after; ++i)
-			_pointer[_size - i] = _pointer[_size - n - i];
-		for (difference_type i = 0; i < n; ++i)
-			_pointer[before + i] = *first++;
+		difference_type i = _size + n - 1;
+		difference_type j = _size - 1;
+		
+		while (i >= d_size && j >= 0)
+			_alloc.construct(&_pointer[i--], _pointer[j--]);
+		while (i >= d_size)
+			_alloc.construct(&_pointer[i--], value_type());
+		while (i >= before && j >= 0)
+			_pointer[i--] = _pointer[j--];
+		for (difference_type i = 0; i < n; ++i, ++first)
+			_pointer[before + i] = *first;
 	}
 	else
-		for (difference_type i = 0; i < n; ++i)
-			_alloc.construct(&_pointer[i], *first++);
+		for (difference_type i = 0; i < n; ++i, ++first)
+			_alloc.construct(&_pointer[i], *first);
 	_size += n;
 }
 
