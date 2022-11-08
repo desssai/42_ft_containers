@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/07 20:42:19 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/08 18:30:34 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,8 +171,9 @@ vector<T, Allocator>::vector(InputIterator first, InputIterator last, const allo
 
 /* COPY CONSTRUCTOR */
 template <typename T, typename Allocator>
-vector<T, Allocator>::vector(const vector& other) : _pointer(nullptr) {
-	*this = other;
+vector<T, Allocator>::vector(const vector& other) : _size(0), _alloc(other._alloc), _capacity(other._capacity), _pointer(_alloc.allocate(_capacity)) {
+	for (; _size < other._size; ++_size)
+		_alloc.construct(&_pointer[_size], other._pointer[_size]);
 }
 
 /* DESTRUCTOR */

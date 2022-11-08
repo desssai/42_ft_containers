@@ -6,14 +6,15 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 12:51:22 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/05 17:14:00 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/08 19:00:33 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEXICOGRAPHICAL_COMPARE_H
 # define LEXICOGRAPHICAL_COMPARE_H
 
-namespace ft {
+namespace ft
+{
 
 
 template <typename InputIterator1, typename InputIterator2>

@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 14:56:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/05 17:13:31 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/08 19:00:48 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 
 # include "iterator_traits.hpp"
 
-namespace ft {
+namespace ft
+{
+
 
 template <typename Iterator>
 class reverse_iterator {
@@ -244,6 +246,7 @@ template <typename Iterator>
 reverse_iterator<Iterator>	operator + (typename reverse_iterator<Iterator>::difference_type n, const reverse_iterator<Iterator>& rev_it) {
 	return reverse_iterator<Iterator>(rev_it.base() - n);
 }
+
 
 }; /* FT NAMESPACE */
 

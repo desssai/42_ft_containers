@@ -6,14 +6,15 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 12:51:22 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/05 17:11:34 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/08 19:00:25 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EQUAL_H
 # define EQUAL_H
 
-namespace ft {
+namespace ft
+{
 
 
 template <typename InputIterator1, typename InputIterator2>
