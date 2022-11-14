@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 00:16:36 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/14 13:15:39 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/14 21:43:19 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ namespace ft
 template <typename T>
 class node;
 
-template <typename Iterator, typename Container>
+template <typename T, typename Node>
 class red_black_tree_iterator {
 
 public:
@@ -33,23 +33,23 @@ public:
 
 	typedef std::bidirectional_iterator_tag		iterator_category;
 	typedef std::ptrdiff_t						difference_type;
-	typedef Iterator							value_type;
-	typedef Iterator&							reference;
-	typedef Iterator*							pointer;
-	typedef typename ft::node<Iterator>*		iterator_type;
+	typedef T									value_type;
+	typedef T&									reference;
+	typedef T*									pointer;
+	typedef Node*								iterator_type;
 
 
 	/* ASSIGNMENT */
 
 	red_black_tree_iterator(void);
 	red_black_tree_iterator(const iterator_type& base);
-	template <typename Iter>
-	red_black_tree_iterator(const red_black_tree_iterator<Iter, typename ft::enable_if<std::is_same<Iter, typename Container::pointer>::value, Container>::type>& other);
+	template <typename _T>
+	red_black_tree_iterator(const red_black_tree_iterator<_T, typename ft::enable_if<std::is_same<_T, typename Node::value_type>::value, Node>::type>& other);
 
 	~red_black_tree_iterator();
 
-	template <typename Iter>
-	red_black_tree_iterator&	operator =	(const red_black_tree_iterator<Iter, typename ft::enable_if<std::is_same<Iter, typename Container::pointer>::value, Container>::type>& other);
+	template <typename _T>
+	red_black_tree_iterator&	operator =	(const red_black_tree_iterator<_T, typename ft::enable_if<std::is_same<_T, typename Node::value_type>::value, Node>::type>& other);
 
 	/* MEMBER METHODS */
 
@@ -70,22 +70,22 @@ protected:
 
 /* ASSIGNMENT START --> */
 
-template <typename Iterator, typename Container>
-red_black_tree_iterator<Iterator, Container>::red_black_tree_iterator(void) : _base(iterator_type()) { }
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node>::red_black_tree_iterator(void) : _base(iterator_type()) { }
 
-template <typename Iterator, typename Container>
-red_black_tree_iterator<Iterator, Container>::red_black_tree_iterator(const iterator_type& base) : _base(base) { }
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node>::red_black_tree_iterator(const iterator_type& base) : _base(base) { }
 
-template <typename Iterator, typename Container>
-template <typename Iter>
-red_black_tree_iterator<Iterator, Container>::red_black_tree_iterator(const red_black_tree_iterator<Iter, typename ft::enable_if<std::is_same<Iter, typename Container::pointer>::value, Container>::type>& other) : _base(other.base()->value) { }
+template <typename T, typename Node>
+template <typename _T>
+red_black_tree_iterator<T, Node>::red_black_tree_iterator(const red_black_tree_iterator<_T, typename ft::enable_if<std::is_same<_T, typename Node::value_type>::value, Node>::type>& other) : _base(other.base()) { }
 
-template <typename Iterator, typename Container>
-red_black_tree_iterator<Iterator, Container>::~red_black_tree_iterator() { }
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node>::~red_black_tree_iterator() { }
 
-template <typename Iterator, typename Container>
-template <typename Iter>
-red_black_tree_iterator<Iterator, Container>& red_black_tree_iterator<Iterator, Container>::operator = (const red_black_tree_iterator<Iter, typename ft::enable_if<std::is_same<Iter, typename Container::pointer>::value, Container>::type>& other) {
+template <typename T, typename Node>
+template <typename _T>
+red_black_tree_iterator<T, Node>& red_black_tree_iterator<T, Node>::operator = (const red_black_tree_iterator<_T, typename ft::enable_if<std::is_same<_T, typename Node::value_type>::value, Node>::type>& other) {
 	_base = other.base();
 	return *this;
 }
@@ -94,18 +94,18 @@ red_black_tree_iterator<Iterator, Container>& red_black_tree_iterator<Iterator, 
 
 /* MEMBER METHODS START --> */
 
-template <typename Iterator, typename Container>
-typename red_black_tree_iterator<Iterator, Container>::reference red_black_tree_iterator<Iterator, Container>::operator * (void) const {
+template <typename T, typename Node>
+typename red_black_tree_iterator<T, Node>::reference red_black_tree_iterator<T, Node>::operator * (void) const {
 	return _base->value;
 }
 
-template <typename Iterator, typename Container>
-typename red_black_tree_iterator<Iterator, Container>::pointer red_black_tree_iterator<Iterator, Container>::operator -> (void) const {
+template <typename T, typename Node>
+typename red_black_tree_iterator<T, Node>::pointer red_black_tree_iterator<T, Node>::operator -> (void) const {
 	return &_base->value;
 }
 
-template <typename Iterator, typename Container>
-red_black_tree_iterator<Iterator, Container> red_black_tree_iterator<Iterator, Container>::operator -- (int) {
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node> red_black_tree_iterator<T, Node>::operator -- (int) {
 	red_black_tree_iterator copy(*this);
 	if (_base->left) {
 		_base = _base->left;
@@ -117,8 +117,8 @@ red_black_tree_iterator<Iterator, Container> red_black_tree_iterator<Iterator, C
 	return copy;
 }
 
-template <typename Iterator, typename Container>
-red_black_tree_iterator<Iterator, Container>& red_black_tree_iterator<Iterator, Container>::operator -- (void) {
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node>& red_black_tree_iterator<T, Node>::operator -- (void) {
 	if (_base->left) {
 		_base = _base->left;
 		while (_base->right)
@@ -129,8 +129,8 @@ red_black_tree_iterator<Iterator, Container>& red_black_tree_iterator<Iterator, 
 	return *this;
 }
 
-template <typename Iterator, typename Container>
-red_black_tree_iterator<Iterator, Container> red_black_tree_iterator<Iterator, Container>::operator ++ (int) {
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node> red_black_tree_iterator<T, Node>::operator ++ (int) {
 	red_black_tree_iterator copy(*this);
 	if (_base->right) {
 		_base = _base->right;
@@ -149,8 +149,8 @@ red_black_tree_iterator<Iterator, Container> red_black_tree_iterator<Iterator, C
 	return copy;
 }
 
-template <typename Iterator, typename Container>
-red_black_tree_iterator<Iterator, Container>& red_black_tree_iterator<Iterator, Container>::operator ++ (void) {
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node>& red_black_tree_iterator<T, Node>::operator ++ (void) {
 	if (_base->right) {
 		_base = _base->right;
 		while (_base->left)
@@ -168,8 +168,8 @@ red_black_tree_iterator<Iterator, Container>& red_black_tree_iterator<Iterator, 
 	return *this;
 }
 
-template <typename Iterator, typename Container>
-const typename red_black_tree_iterator<Iterator, Container>::iterator_type& red_black_tree_iterator<Iterator, Container>::base(void) const {
+template <typename T, typename Node>
+const typename red_black_tree_iterator<T, Node>::iterator_type& red_black_tree_iterator<T, Node>::base(void) const {
 	return _base;
 }
 
@@ -177,63 +177,63 @@ const typename red_black_tree_iterator<Iterator, Container>::iterator_type& red_
 
 /* NON-MEMBER OPERATORS START --> */
 
-template <typename Iterator, typename Container> 
-bool operator == (const red_black_tree_iterator<Iterator, Container>& lhs, const red_black_tree_iterator<Iterator, Container>& rhs) {
+template <typename T, typename Node> 
+bool operator == (const red_black_tree_iterator<T, Node>& lhs, const red_black_tree_iterator<T, Node>& rhs) {
 	return (lhs.base() == rhs.base());
 }
 
-template <typename IteratorL, typename IteratorR, typename Container> 
-bool operator == (const red_black_tree_iterator<IteratorL, Container>& lhs, const red_black_tree_iterator<IteratorR, Container>& rhs) {
+template <typename _TL, typename _TR, typename Node> 
+bool operator == (const red_black_tree_iterator<_TL, Node>& lhs, const red_black_tree_iterator<_TR, Node>& rhs) {
 	return (lhs.base() == rhs.base());
 }
 
-template <typename Iterator, typename Container> 
-inline bool operator != (const red_black_tree_iterator<Iterator, Container>& lhs, const red_black_tree_iterator<Iterator, Container>& rhs) {
-	return (lhs.base() != rhs.base());
+template <typename T, typename Node> 
+inline bool operator != (const red_black_tree_iterator<T, Node>& lhs, const red_black_tree_iterator<T, Node>& rhs) {
+	return (!(lhs.base() == rhs.base()));
 }
 
-template <typename IteratorL, typename IteratorR, typename Container> 
-inline bool operator != (const red_black_tree_iterator<IteratorL, Container>& lhs, const red_black_tree_iterator<IteratorR, Container>& rhs) {
-	return (lhs.base() != rhs.base());
+template <typename _TL, typename _TR, typename Node> 
+inline bool operator != (const red_black_tree_iterator<_TL, Node>& lhs, const red_black_tree_iterator<_TR, Node>& rhs) {
+	return (!(lhs.base() == rhs.base()));
 }
 
-template <typename Iterator, typename Container> 
-bool operator < (const red_black_tree_iterator<Iterator, Container>& lhs, const red_black_tree_iterator<Iterator, Container>& rhs) {
+template <typename T, typename Node> 
+bool operator < (const red_black_tree_iterator<T, Node>& lhs, const red_black_tree_iterator<T, Node>& rhs) {
 	return (lhs.base() < rhs.base());
 }
 
-template <typename IteratorL, typename IteratorR, typename Container> 
-bool operator < (const red_black_tree_iterator<IteratorL, Container>& lhs, const red_black_tree_iterator<IteratorR, Container>& rhs) {
+template <typename _TL, typename _TR, typename Node> 
+bool operator < (const red_black_tree_iterator<_TL, Node>& lhs, const red_black_tree_iterator<_TR, Node>& rhs) {
 	return (lhs.base() < rhs.base());
 }
 
-template <typename Iterator, typename Container> 
-bool operator <= (const red_black_tree_iterator<Iterator, Container>& lhs, const red_black_tree_iterator<Iterator, Container>& rhs) {
+template <typename T, typename Node> 
+bool operator <= (const red_black_tree_iterator<T, Node>& lhs, const red_black_tree_iterator<T, Node>& rhs) {
 	return (lhs.base() <= rhs.base());
 }
 
-template <typename IteratorL, typename IteratorR, typename Container> 
-bool operator <= (const red_black_tree_iterator<IteratorL, Container>& lhs, const red_black_tree_iterator<IteratorR, Container>& rhs) {
+template <typename _TL, typename _TR, typename Node> 
+bool operator <= (const red_black_tree_iterator<_TL, Node>& lhs, const red_black_tree_iterator<_TR, Node>& rhs) {
 	return (lhs.base() <= rhs.base());
 }
 
-template <typename Iterator, typename Container> 
-bool operator > (const red_black_tree_iterator<Iterator, Container>& lhs, const red_black_tree_iterator<Iterator, Container>& rhs) {
+template <typename T, typename Node> 
+bool operator > (const red_black_tree_iterator<T, Node>& lhs, const red_black_tree_iterator<T, Node>& rhs) {
 	return (lhs.base() > rhs.base());
 }
 
-template <typename IteratorL, typename IteratorR, typename Container> 
-bool operator > (const red_black_tree_iterator<IteratorL, Container>& lhs, const red_black_tree_iterator<IteratorR, Container>& rhs) {
+template <typename _TL, typename _TR, typename Node> 
+bool operator > (const red_black_tree_iterator<_TL, Node>& lhs, const red_black_tree_iterator<_TR, Node>& rhs) {
 	return (lhs.base() > rhs.base());
 }
 
-template <typename Iterator, typename Container> 
-bool operator >= (const red_black_tree_iterator<Iterator, Container>& lhs, const red_black_tree_iterator<Iterator, Container>& rhs) {
+template <typename T, typename Node> 
+bool operator >= (const red_black_tree_iterator<T, Node>& lhs, const red_black_tree_iterator<T, Node>& rhs) {
 	return (lhs.base() >= rhs.base());
 }
 
-template <typename IteratorL, typename IteratorR, typename Container> 
-bool operator >= (const red_black_tree_iterator<IteratorL, Container>& lhs, const red_black_tree_iterator<IteratorR, Container>& rhs) {
+template <typename _TL, typename _TR, typename Node> 
+bool operator >= (const red_black_tree_iterator<_TL, Node>& lhs, const red_black_tree_iterator<_TR, Node>& rhs) {
 	return (lhs.base() >= rhs.base());
 }
 
