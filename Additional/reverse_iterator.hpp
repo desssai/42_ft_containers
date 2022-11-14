@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 14:56:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/08 19:00:48 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/14 18:24:14 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ template <typename Iterator>
 class reverse_iterator {
 
 private:
+	/* MEMBER TYPES */
+
 	typedef typename ft::iterator_traits<Iterator>		traits_type;
 
 public:
@@ -33,6 +35,8 @@ public:
 	typedef typename traits_type::reference				reference;
 	typedef typename traits_type::pointer				pointer;
 
+	/* ASSIGNMENT */
+	
 	reverse_iterator();
 	explicit reverse_iterator(iterator_type it);
 	reverse_iterator(const reverse_iterator& other);
@@ -40,28 +44,33 @@ public:
 	reverse_iterator(const reverse_iterator<Iter>& other);
 	~reverse_iterator();
 
-	reverse_iterator&	operator = (const reverse_iterator& other);
+	reverse_iterator&		operator = (const reverse_iterator& other);
 	template <typename Iter>
-	reverse_iterator&	operator = (const reverse_iterator<Iter>& other);
+	reverse_iterator&		operator = (const reverse_iterator<Iter>& other);
 
-	iterator_type		base(void) const;
+	/* MEMBER METHODS */
 
-	reference				operator *	(void) const;
-	reverse_iterator		operator +	(const difference_type& n);
+	const iterator_type		base(void) const;
 	reverse_iterator&		operator ++	(void);
 	reverse_iterator		operator ++	(int);
 	reverse_iterator&		operator --	(void);
 	reverse_iterator		operator --	(int);
+	reference				operator *	(void) const;
+	pointer					operator ->	(void) const;
 	reverse_iterator&		operator +=	(const difference_type& n);
 	reverse_iterator&		operator -=	(const difference_type& n);
 	reverse_iterator		operator -	(const difference_type& n) const;
-	pointer					operator ->	(void) const;
+	reverse_iterator		operator +	(const difference_type& n);
 	reference				operator []	(const difference_type& n) const;
 
 private:
+	/* ATTRIBUTES */
+
 	iterator_type	_base;
 
 };
+
+/* ASSIGNMENT START --> */
 
 template <typename Iterator>
 reverse_iterator<Iterator>::reverse_iterator() : _base(Iterator()) {}
@@ -83,7 +92,9 @@ reverse_iterator<Iterator>::reverse_iterator(const reverse_iterator<Iter>& other
 template <typename Iterator>
 reverse_iterator<Iterator>::~reverse_iterator() {}
 
-/* MEMBER OPERATORS */
+/* <-- ASSIGNMENT END */
+
+/* MEMBER METHODS START --> */
 
 template <typename Iterator>
 reverse_iterator<Iterator>& reverse_iterator<Iterator>::operator = (const reverse_iterator& other) {
@@ -101,7 +112,7 @@ reverse_iterator<Iterator>& reverse_iterator<Iterator>::operator = (const revers
 }
 
 template <typename Iterator>
-typename reverse_iterator<Iterator>::iterator_type reverse_iterator<Iterator>::base(void) const {
+const typename reverse_iterator<Iterator>::iterator_type reverse_iterator<Iterator>::base(void) const {
 	return _base;
 }
 
@@ -170,7 +181,9 @@ typename reverse_iterator<Iterator>::reference reverse_iterator<Iterator>::opera
 	return _base[-n-1];
 }
 
-/* NON-MEMBER OPERATORS */
+/* <-- MEMBER METHODS END */
+
+/* NON-MEMBER OPERATORS START --> */
 
 template <typename Iterator> 
 bool operator == (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) {
@@ -246,6 +259,8 @@ template <typename Iterator>
 reverse_iterator<Iterator>	operator + (typename reverse_iterator<Iterator>::difference_type n, const reverse_iterator<Iterator>& rev_it) {
 	return reverse_iterator<Iterator>(rev_it.base() - n);
 }
+
+/* <-- NON-MEMBER OPERATORS END */
 
 
 }; /* FT NAMESPACE */

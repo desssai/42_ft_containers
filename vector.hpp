@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/08 18:30:34 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/14 10:41:30 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,8 @@
 # include "Additional/enable_if.hpp"
 # include "Additional/is_integral.hpp"
 # include "Additional/iterator_traits.hpp"
-# include "Additional/normal_iterator.hpp"
+# include "Additional/vector_iterator.hpp"
 # include "Additional/reverse_iterator.hpp"
-# include "Additional/integral_constant.hpp"
 # include "Additional/lexicographical_compare.hpp"
 
 namespace ft
@@ -34,14 +33,14 @@ public:
 	
 	typedef Allocator													allocator_type;
 	typedef T															value_type;
-	typedef typename allocator_type::reference							reference;
-	typedef typename allocator_type::const_reference					const_reference;
 	typedef typename allocator_type::pointer							pointer;
+	typedef typename allocator_type::reference							reference;
 	typedef typename allocator_type::const_pointer						const_pointer;
+	typedef typename allocator_type::const_reference					const_reference;
 	typedef std::ptrdiff_t	 											difference_type;
 	typedef std::size_t 												size_type;
-	typedef typename ft::normal_iterator<pointer, vector>				iterator;
-	typedef typename ft::normal_iterator<const_pointer, vector>			const_iterator;
+	typedef typename ft::vector_iterator<pointer, vector>				iterator;
+	typedef typename ft::vector_iterator<const_pointer, vector>			const_iterator;
 	typedef typename ft::reverse_iterator<iterator>						reverse_iterator;
 	typedef typename ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 
@@ -115,18 +114,22 @@ public:
 	friend void swap(vector<Y, Alloc>& lhs, vector<Y, Alloc>& rhs);
 
 private:
+	/* ATTRIBUTES */
+
 	size_type	_size;
 	Allocator	_alloc;
 	size_type	_capacity;
 	pointer		_pointer;
 
 	/* CONSTRUCTOR TEMPLATE OVERLOADING */
+
 	template <typename _Integer>
 	void	__construct(_Integer size, _Integer val, ft::true_type);
 	template <typename _Iterator>
 	void	__construct(_Iterator first, _Iterator last, ft::false_type);
 	
 	/* ASSIGN TEMPLATE OVERLOADING */
+	
 	template <typename _Integer>
 	void	__assign(_Integer size, _Integer val, ft::true_type);
 	template <typename _Iterator>
@@ -137,6 +140,7 @@ private:
 	void	__assign_range(ForwardIterator first, ForwardIterator last, std::forward_iterator_tag);
 
 	/* INSERT TEMPLATE OVERLOADING */
+	
 	template <typename _Integer>
 	void	__insert(iterator position, _Integer n, _Integer val, ft::true_type);
 	template <typename _Iterator>
@@ -150,18 +154,15 @@ private:
 
 /* CONSTRUCTORS AND DESTRUCTOR START --> */
 
-/* DEFAULT CONSTRUCTOR */
 template <typename T, typename Allocator>
 vector<T, Allocator>::vector(const allocator_type& alloc) : _size(0), _alloc(alloc), _capacity(0), _pointer(nullptr) {}
 
-/* FILL CONSTRUCTOR */
 template <typename T, typename Allocator>
 vector<T, Allocator>::vector(size_type n, const value_type& val, const allocator_type& alloc) : _size(0), _alloc(alloc), _capacity(n), _pointer(_alloc.allocate(_capacity)) {
 	while (_size < _capacity)
 		_alloc.construct(&_pointer[_size++], val);
 }
 
-/* RANGE CONSTRUCTOR */
 template <typename T, typename Allocator>
 template <typename InputIterator>
 vector<T, Allocator>::vector(InputIterator first, InputIterator last, const allocator_type& alloc) : _size(0), _alloc(alloc), _capacity(0), _pointer(nullptr) {
@@ -169,14 +170,12 @@ vector<T, Allocator>::vector(InputIterator first, InputIterator last, const allo
 	__construct(first, last, _Integer());
 }
 
-/* COPY CONSTRUCTOR */
 template <typename T, typename Allocator>
 vector<T, Allocator>::vector(const vector& other) : _size(0), _alloc(other._alloc), _capacity(other._capacity), _pointer(_alloc.allocate(_capacity)) {
 	for (; _size < other._size; ++_size)
 		_alloc.construct(&_pointer[_size], other._pointer[_size]);
 }
 
-/* DESTRUCTOR */
 template <typename T, typename Allocator>
 vector<T, Allocator>::~vector() {
 	if (_pointer) {
@@ -653,6 +652,7 @@ void	vector<T, Allocator>::__insert_range(iterator position, ForwardIterator fir
 }
 
 /* <-- PRIVATE FUNCTIONS END */
+
 
 } /* FT NAMESPACE */
 

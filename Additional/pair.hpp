@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:16:51 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/08 13:46:32 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/11 17:51:46 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ public:
 
 };
 
+/* ASSIGNMENT */
+
 template <typename T1, typename T2>
 pair<T1, T2>::pair() : first(first_type()), second(second_type()) { }
 
@@ -45,15 +47,13 @@ pair<T1, T2>::pair(const first_type& _first, const second_type& _second) : first
 
 template <typename T1, typename T2>
 template <typename U1, typename U2>
-pair<T1, T2>::pair(const pair<U1, U2>& other) {
-	*this = other;
-}
+pair<T1, T2>::pair(const pair<U1, U2>& other) : first(other.first), second(other.second) { }
 
 template <typename T1, typename T2>
 pair<T1, T2>::~pair() { }
 
 template <typename T1, typename T2>
-typename pair<T1, T2>::pair& pair<T1, T2>::operator = (const pair& other) {
+pair<T1, T2>& pair<T1, T2>::operator = (const pair& other) {
 	if (*this != other) {
 		first = other.first;
 		second = other.second;
@@ -61,6 +61,7 @@ typename pair<T1, T2>::pair& pair<T1, T2>::operator = (const pair& other) {
 	return *this;
 }
 
+/* NON-MEMBER COMPARISON OPERATOR OVERLOADING */
 
 template <typename T1, typename T2>
 bool operator == (const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
@@ -91,7 +92,6 @@ template <typename T1, typename T2>
 bool operator >= (const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
 	return !(lhs < rhs);
 }
-
 
 } /* FT NAMESPACE */
 

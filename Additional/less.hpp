@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 18:40:12 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/08 18:42:48 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/12 20:53:33 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ namespace ft
 
 template <typename T>
 class less {
+	
+public:	
 	typedef T		first_argument_type;
 	typedef T		second_argument_type;
 	typedef bool	result_type;
