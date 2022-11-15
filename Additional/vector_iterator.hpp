@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 14:57:35 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/14 19:06:48 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/15 13:55:26 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define VECTOR_ITERATOR_H
 
 # include "enable_if.hpp"
-# include "is_integral.hpp"
 # include "iterator_traits.hpp"
 
 namespace ft
