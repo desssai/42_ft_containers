@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:57:17 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/14 21:53:49 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/15 22:51:11 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,31 +19,23 @@ namespace ft = std ;
 #else 
 # include "vector.hpp"
 # include "stack.hpp"
-# include "map.hpp"
+# include "Additional/red_black_tree.hpp"
 #endif
 
 int main(void) {
-	ft::map<int, int>	m1;
+	ft::red_black_tree<int>					tree;
 
-	m1.insert(m1.begin(), ft::pair<int, int>(10, 10));
-	// m1.insert(m1.begin(), ft::pair<int, int>(3, 3));
-	// m1.insert(m1.begin(), ft::pair<int, int>(2, 2));
-	// m1.insert(m1.begin(), ft::pair<int, int>(1, 1));
-	// m1.insert(m1.begin(), ft::pair<int, int>(30, 30));
-	// m1.insert(m1.begin(), ft::pair<int, int>(20, 20));
-	// m1.insert(m1.begin(), ft::pair<int, int>(0, 0));
+	tree.insert(nullptr, 10);
+	tree.insert(nullptr, 11);
 
-	// ft::map<int, int>::iterator	it2 = m1.begin();
+	ft::red_black_tree<int>::iterator		it1 = tree.begin();
+	ft::red_black_tree<int>::iterator		it2 = tree.end();
+	ft::red_black_tree<int>::iterator		it3 = tree.begin();
 	
-	// ft::map<int, int>::const_iterator	it3(it2);
-
-	for (int i = 0; i < 2; ++i)
-		for (ft::map<int, int>::iterator	it2 = m1.begin(); it2 != m1.end(); ++it2)
-			std::cout << it2->first << std::endl;
+	for (; it1 != it2; it1++)
+		std::cout << *it1 << "hety\n";
+	// for (; it3 != it2; it3--)
+	// 	std::cout << "hety\n";
 	
-	std::cout << m1.size() << std::endl;
-
-	// std::cout << m1.max_size() << " " << m1.size() << " " << m1.empty() << '\n';
-
 	return 0;
 }

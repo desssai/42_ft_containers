@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/15 15:06:43 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/15 22:17:01 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ public:
 
 	node&		operator = (const node& other);
 
-	link_type	minimum(void) const;
-	link_type	maximum(void) const;
+	// link_type	minimum(void) const;
+	// link_type	maximum(void) const;
 
 	value_type	value;
 	link_type	parent;
@@ -46,7 +46,7 @@ public:
 };
 
 template <typename T>
-node<T>::node(const value_type& val = value_type()) : value(val), parent(nullptr), left(nullptr), right(nullptr), color(red) { }
+node<T>::node(const value_type& val) : value(val), parent(nullptr), left(nullptr), right(nullptr), color(red) { }
 
 template <typename T>
 node<T>::node(const node& other) {
@@ -65,23 +65,23 @@ node<T>& node<T>::operator = (const node& other) {
 	color = other.color;
 }
 
-template <typename T>
-typename node<T>::link_type node<T>::minimum(void) const {
-	node	copy(*this);
+// template <typename T>
+// typename node<T>::link_type node<T>::minimum(void) const {
+// 	link_type	copy(&this);
+	
+// 	while (copy->left)
+// 		copy = copy->left;
+// 	return copy;
+// }
 
-	while (copy->left)
-		copy = copy->left;
-	return &copy;
-}
-
-template <typename T>
-typename node<T>::link_type node<T>::maximum(void) const {
-	node	copy(*this);
-
-	while (copy->right)
-		right = copy->right;
-	return &copy;
-}
+// template <typename T>
+// typename node<T>::link_type node<T>::maximum(void) const {
+// 	link_type	copy(&this);
+	
+// 	while (copy->right)
+// 		right = copy->right;
+// 	return copy;
+// }
 
 
 } /* FT NAMESPACE */
