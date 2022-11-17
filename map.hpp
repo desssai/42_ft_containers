@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 18:33:47 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/17 00:22:28 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/17 23:25:49 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,35 @@ namespace ft
 template <typename Key, typename T, typename Compare = ft::less<T>, typename Allocator = std::allocator<ft::pair<const Key, T> > >
 class map {
 
-private:
-	typedef typename ft::red_black_tree<typename ft::pair<const Key, T>, Compare, Allocator>	tree_type;
-
 public:
+
 	typedef	Key																		key_type;
 	typedef	T																		mapped_type;
 	typedef	ft::pair<const Key, T>													value_type;
 	typedef	Compare																	key_compare;
-	// typedef	Compare																	value_compare;
+
+	class value_compare : public std::binary_function<value_type, value_type, bool>
+	{
+		friend class map;
+		
+		protected:
+			key_compare	m_comparator;
+			value_compare(key_compare comparator = key_compare()) : m_comparator(comparator) {};
+			value_compare &	operator=(const value_compare & rhd) {
+				this->m_comparator = rhd.m_comparator;
+				return (*this);
+			};
+	
+		public:
+			bool	operator()(const value_type & lhd, const value_type & rhd)	const {
+				return (this->m_comparator(lhd.first, rhd.first));
+			};
+	};
+
+private:
+	typedef typename ft::red_black_tree<value_type, value_compare, Allocator>		tree_type;
+	
+public:
 	typedef typename tree_type::pointer 											pointer;
 	typedef typename tree_type::const_pointer										const_pointer;
 	typedef typename tree_type::reference											reference;
@@ -48,6 +68,8 @@ public:
 	map(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
 	map(const map& other);
 	~map();
+
+	// ft::pair<iterator, bool>	insert(iterator pos, const value_type&, )
 
 	iterator					begin();
 	iterator					end();
@@ -72,13 +94,11 @@ template <typename Key, typename T, typename Compare, typename Allocator>
 template <class InputIterator>
 map<Key, T, Compare, Allocator>::map(InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc) : _tree(comp, alloc) {
 	for (; first != last; ++first)
-		_tree.insert(_tree.end(), *first);
+		_tree.insert(nullptr, *first);
 }
 
 template <typename Key, typename T, typename Compare, typename Allocator>
-map<Key, T, Compare, Allocator>::map(const map& other) {
-	_tree = other._tree;
-}
+map<Key, T, Compare, Allocator>::map(const map& other) : _tree(other._tree._compare, other._tree._alloc) { }
 
 template <typename Key, typename T, typename Compare, typename Allocator>
 map<Key, T, Compare, Allocator>::~map() { }
@@ -124,8 +144,11 @@ typename map<Key, T, Compare, Allocator>::const_reverse_iterator map<Key, T, Com
 }
 
 template <typename Key, typename T, typename Compare, typename Allocator>
-size_type					size(void) const;
+typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocator>::size(void) const {
+	return _tree.size();
+}
 
 } /* FT NAMESPACE */
+
 
 #endif /* MAP_H */

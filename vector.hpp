@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/14 10:41:30 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/17 18:38:09 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ public:
 	typedef typename allocator_type::const_reference					const_reference;
 	typedef std::ptrdiff_t	 											difference_type;
 	typedef std::size_t 												size_type;
-	typedef typename ft::vector_iterator<pointer, vector>				iterator;
-	typedef typename ft::vector_iterator<const_pointer, vector>			const_iterator;
-	typedef typename ft::reverse_iterator<iterator>						reverse_iterator;
-	typedef typename ft::reverse_iterator<const_iterator>				const_reverse_iterator;
+	typedef ft::vector_iterator<pointer, vector>				iterator;
+	typedef ft::vector_iterator<const_pointer, vector>			const_iterator;
+	typedef ft::reverse_iterator<iterator>						reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 
 	/* CONSTRUCTORS DESTRUCTORS + ASSIGNMENT OPERATOR */
 
