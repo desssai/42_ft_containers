@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/15 22:17:01 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/16 20:01:56 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,6 @@ public:
 
 	node&		operator = (const node& other);
 
-	// link_type	minimum(void) const;
-	// link_type	maximum(void) const;
-
 	value_type	value;
 	link_type	parent;
 	link_type	left;
@@ -64,24 +61,6 @@ node<T>& node<T>::operator = (const node& other) {
 	right = other.right;
 	color = other.color;
 }
-
-// template <typename T>
-// typename node<T>::link_type node<T>::minimum(void) const {
-// 	link_type	copy(&this);
-	
-// 	while (copy->left)
-// 		copy = copy->left;
-// 	return copy;
-// }
-
-// template <typename T>
-// typename node<T>::link_type node<T>::maximum(void) const {
-// 	link_type	copy(&this);
-	
-// 	while (copy->right)
-// 		right = copy->right;
-// 	return copy;
-// }
 
 
 } /* FT NAMESPACE */
