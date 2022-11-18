@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/17 23:18:44 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/18 22:06:30 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,28 +51,29 @@ public:
 	red_black_tree(const red_black_tree& other);
 	~red_black_tree();
 
-	red_black_tree&				operator = (const red_black_tree& other);
+	red_black_tree&						operator = (const red_black_tree& other);
 
-	/* ITERATORS */
+	iterator							begin();
+	iterator							end();
+	const_iterator						begin() const;
+	const_iterator						end() const;
+	reverse_iterator					rbegin();
+	reverse_iterator					rend();
+	const_reverse_iterator				rbegin() const;
+	const_reverse_iterator				rend() const;
 
-	iterator					begin();
-	iterator					end();
-	const_iterator				begin() const;
-	const_iterator				end() const;
-	reverse_iterator			rbegin();
-	reverse_iterator			rend();
-	const_reverse_iterator		rbegin() const;
-	const_reverse_iterator		rend() const;
+	ft::pair<iterator, bool>			insert(link_type new_node, const value_type& value);
+	void								erase(link_type node);
+	void								clear(void);
 
+	size_type							size(void) const;
 
-	/* MODIFIERS */
-
-	ft::pair<iterator, bool>	insert(link_type position, const value_type& value);
-	void						clear(void);
-
-	/* INFO */
-
-	size_type					size(void) const;
+	iterator							find(const value_type& value);
+	const_iterator						find(const value_type& value) const;
+	iterator							lower_bound(const value_type& key);
+	const_iterator						lower_bound(const value_type& key) const;
+	iterator							upper_bound(const value_type& key);
+	const_iterator						upper_bound(const value_type& key) const;
 
 	link_type		_null;
 	link_type		_root;
@@ -81,18 +82,16 @@ public:
 	allocator_type	_alloc;
 
 private:
-	void						recursive_copy(link_type* dest, link_type src, link_type _null, link_type parent);
-	void						balance_after_insertion(link_type node);
-	void						balance_after_deletion(link_type node);
-	void						delete_node(link_type node);
-	void						clear_tree(link_type node);
-	void						right_rotate(link_type node);
-	void						left_rotate(link_type node);
-	void						link_borders(void);
-	void						unlink_borders(void);
-	link_type					minimum(void) const;
-	link_type					maximum(void) const;
-
+	void								recursive_copy(link_type* dest, link_type src, link_type _null, link_type parent);
+	void								balance_after_insertion(link_type new_node);
+	link_type							minimum(link_type node = nullptr) const;
+	link_type							maximum(link_type node = nullptr) const;
+	void								delete_node(link_type node);
+	void								clear_tree(link_type node);
+	void								right_rotate(link_type node);
+	void								left_rotate(link_type node);
+	void								link_borders(void);
+	void								unlink_borders(void);
 };
 
 
@@ -111,22 +110,22 @@ red_black_tree<T, Compare, Allocator>::red_black_tree(const red_black_tree& othe
 	_null->left = _null;
 	_null->right = _null;
 	recursive_copy(&_root, other._root, other._null, nullptr);
+	link_borders();
 }
 
 template <typename T, typename Compare, typename Allocator>
 red_black_tree<T, Compare, Allocator>::~red_black_tree() {
 	clear();
-	_alloc.destroy(_null);
-	_alloc.deallocate(_null, 1);
+	delete_node(_null);
 }
 
 template <typename T, typename Compare, typename Allocator>
 red_black_tree<T, Compare, Allocator>& red_black_tree<T, Compare, Allocator>::operator = (const red_black_tree& other) {	
 	clear();
-	_compare = other._compare;
 	_alloc = other._alloc;
 	_size = other._size;
 	recursive_copy(&_root, other._root, other._null, nullptr);
+	link_borders();
 	return *this;
 }
 
@@ -175,38 +174,56 @@ typename red_black_tree<T, Compare, Allocator>::const_reverse_iterator red_black
 /* <-- ITERATORS END */
 
 template <typename T, typename Compare, typename Allocator>
-ft::pair<typename red_black_tree<T, Compare, Allocator>::iterator, bool> red_black_tree<T, Compare, Allocator>::insert(link_type position, const value_type& value) {
-	link_type					curr = (position ? position : _root);
-	link_type					parent = nullptr;
-	bool						is_left = false;
+ft::pair<typename red_black_tree<T, Compare, Allocator>::iterator, bool> red_black_tree<T, Compare, Allocator>::insert(link_type new_node, const value_type& value) {
+	link_type	parent = nullptr;
+	bool		is_left = false;
 
 	unlink_borders();
-	while (curr) {
-		parent = curr;
-		if (_compare(value, curr->value)) {
-			curr = curr->left;
+
+	if (!new_node || new_node == _null || _compare(value, new_node->value))
+		new_node = _root;
+	while (new_node) {
+		parent = new_node;
+		if (_compare(value, new_node->value)) {
+			new_node = new_node->left;
 			is_left = true;
-		} else if (_compare(curr->value, value)) {
-			curr = curr->right;
+		}
+		else if (_compare(new_node->value, value)) {
+			new_node = new_node->right;
 			is_left = false;
-		} else
-			return ft::make_pair(iterator(curr, _null), false);
+		}
+		else if (!_compare(new_node->value, value) && !_compare(value, new_node->value)) {
+			link_borders();
+			return ft::make_pair(new_node, false);	
+		}
 	}
-	curr = _alloc.allocate(1);
-	_alloc.construct(curr, value);
+	new_node = _alloc.allocate(1);
+	_alloc.construct(new_node, value);
 	if (parent) {
-		(is_left ? parent->left = curr : parent->right = curr);
-		curr->parent = parent;
+		(is_left ? parent->left = new_node : parent->right = new_node);
+		new_node->parent = parent;
 	}
 	else {
-		_root = curr;
+		_root = new_node;
 		_root->color = black;
 	}
-	balance_after_insertion(curr);
+	balance_after_insertion(new_node);
 	link_borders();
 	++_size;
-	return ft::make_pair(iterator(curr, _null), true);
+	return ft::make_pair(iterator(new_node, _null), true);
 }
+
+// template <typename T, typename Compare, typename Allocator>
+// void red_black_tree<T, Compare, Allocator>::erase(link_type node) {
+// 	link_type	close_nephew = nullptr;
+// 	link_type	dist_nephew = nullptr;
+// 	link_type	parent = node->parent;
+// 	link_type	sibling = nullptr;
+	
+
+
+// 	--_size;
+// }
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::clear(void) {
@@ -222,7 +239,83 @@ typename red_black_tree<T, Compare, Allocator>::size_type red_black_tree<T, Comp
 	return _size;
 }
 
+template <typename T, typename Compare, typename Allocator>
+typename red_black_tree<T, Compare, Allocator>::iterator red_black_tree<T, Compare, Allocator>::find(const value_type& value) {
+	iterator it1 = begin();
+	iterator it2 = end();
+	
+	while (it1 != it2) {
+		if (!_compare(*it1, value) && !_compare(value, *it1))
+			break ;
+		++it1;
+	}
+	return it1;
+}
 
+template <typename T, typename Compare, typename Allocator>
+typename red_black_tree<T, Compare, Allocator>::const_iterator red_black_tree<T, Compare, Allocator>::find(const value_type& value) const {
+	const_iterator it1 = begin();
+	const_iterator it2 = end();
+	
+	while (it1 != it2) {
+		if (!_compare(*it1, value) && !_compare(value, *it1))
+			break ;
+		++it1;
+	}
+	return it1;
+}
+
+template <typename T, typename Compare, typename Allocator>
+typename red_black_tree<T, Compare, Allocator>::iterator red_black_tree<T, Compare, Allocator>::lower_bound(const value_type& value) {
+	iterator it1 = begin();
+	iterator it2 = end();
+	
+	while (it1 != it2) {
+		if (!_compare(*it1, value))
+			break ;
+		++it1;
+	}
+	return it1;
+}
+
+template <typename T, typename Compare, typename Allocator>
+typename red_black_tree<T, Compare, Allocator>::const_iterator red_black_tree<T, Compare, Allocator>::lower_bound(const value_type& value) const {
+	const_iterator it1 = begin();
+	const_iterator it2 = end();
+	
+	while (it1 != it2) {
+		if (!_compare(*it1, value))
+			break ;
+		++it1;
+	}
+	return it1;
+}
+
+template <typename T, typename Compare, typename Allocator>
+typename red_black_tree<T, Compare, Allocator>::iterator red_black_tree<T, Compare, Allocator>::upper_bound(const value_type& value) {
+	iterator it1 = begin();
+	iterator it2 = end();
+	
+	while (it1 != it2) {
+		if (_compare(value, *it1))
+			break ;
+		++it1;
+	}
+	return it1;
+}
+
+template <typename T, typename Compare, typename Allocator>
+typename red_black_tree<T, Compare, Allocator>::const_iterator red_black_tree<T, Compare, Allocator>::upper_bound(const value_type& value) const {
+	const_iterator it1 = begin();
+	const_iterator it2 = end();
+	
+	while (it1 != it2) {
+		if (_compare(value, *it1))
+			break ;
+		++it1;
+	}
+	return it1;
+}
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::recursive_copy(link_type* dest, link_type src, link_type _null, link_type parent) {
@@ -233,10 +326,8 @@ void red_black_tree<T, Compare, Allocator>::recursive_copy(link_type* dest, link
 	*dest = _alloc.allocate(1);
 	_alloc.construct(*dest, *src);
 	(*dest)->parent = parent;
-	if (src->left != _null)
-		recursive_copy(&(*dest)->left, src->left, _null, *dest);
-	if (src->right != _null)
-		recursive_copy(&(*dest)->right, src->right, _null, *dest);
+	recursive_copy(&(*dest)->left, src->left, _null, *dest);
+	recursive_copy(&(*dest)->right, src->right, _null, *dest);
 }
 
 template <typename T, typename Compare, typename Allocator>
@@ -352,6 +443,9 @@ void red_black_tree<T, Compare, Allocator>::left_rotate(link_type node) {
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::link_borders(void) {
+	if (!_root)
+		return ;
+	
 	link_type	min = minimum();
 	link_type	max = maximum();
 
@@ -372,18 +466,18 @@ void red_black_tree<T, Compare, Allocator>::unlink_borders(void) {
 }
 
 template <typename T, typename Compare, typename Allocator>
-typename red_black_tree<T, Compare, Allocator>::link_type red_black_tree<T, Compare, Allocator>::minimum(void) const {
-	link_type	node = _root;
-
+typename red_black_tree<T, Compare, Allocator>::link_type red_black_tree<T, Compare, Allocator>::minimum(link_type node) const {
+	if (!node)
+		node = _root;
 	while (node->left && node->left != _null)
 		node = node->left;
 	return node;
 }
 
 template <typename T, typename Compare, typename Allocator>
-typename red_black_tree<T, Compare, Allocator>::link_type red_black_tree<T, Compare, Allocator>::maximum(void) const {
-	link_type	node = _root;
-
+typename red_black_tree<T, Compare, Allocator>::link_type red_black_tree<T, Compare, Allocator>::maximum(link_type node) const {
+	if (!node)
+		node = _root;
 	while (node->right && node->right != _null)
 		node = node->right;
 	return node;

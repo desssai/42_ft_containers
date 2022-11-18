@@ -6,11 +6,12 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:57:17 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/17 23:02:42 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/18 18:48:46 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
+#include <memory>
 #if 0
 # include <stack>
 # include <vector>
@@ -39,10 +40,39 @@ void print_map(It first, It last)
         std::cout << std::endl;                                                                    \
     }
 
+#define PRINT_FILE_LINE()                                                                          \
+    {                                                                                              \
+        std::cout << " (file: " << __FILE__ << ", line: " << __LINE__ << ")" << std::endl;         \
+    }
+
+#define PRINT_LINE(msg, value)                                                                     \
+    {                                                                                              \
+        std::cout << msg << " " << (value);                                                        \
+        PRINT_FILE_LINE();                                                                         \
+    }
+
+#define PRINT_MSG(msg)                                                                             \
+    {                                                                                              \
+        std::cout << msg;                                                                          \
+        PRINT_FILE_LINE();                                                                         \
+    }
+
 #define PRINT_ALL(map)                                                                             \
     {                                                                                              \
         std::cout << map.size() << "\n";                                                           \
         PRINT_MAP(map);                                                                            \
+    }
+
+#define PRINT_PAIR_PTR(p)                                                                          \
+    {                                                                                              \
+        PRINT_LINE("Key:", (p)->first);                                                            \
+        PRINT_LINE("Value:", (p)->second);                                                         \
+    }
+
+#define PRINT_PAIR_REF(p)                                                                          \
+    {                                                                                              \
+        PRINT_LINE("Key:", (p).first);                                                             \
+        PRINT_LINE("Value:", (p).second);                                                          \
     }
 
 template <typename T>
@@ -108,8 +138,26 @@ void init_array_str_str(ft::pair<std::string, std::string>* arr, std::size_t siz
     }
 }
 
+#define PRINT_BOUND(b, end)                                                                        \
+    {                                                                                              \
+        if (b != end) {                                                                            \
+            PRINT_PAIR_REF(*b);                                                                    \
+        } else {                                                                                   \
+            PRINT_MSG("End iterator");                                                             \
+        }                                                                                          \
+        std::cout << std::endl;                                                                    \
+    }
+
+#define PRINT_EQ_RANGE(p, end)                                                                     \
+    {                                                                                              \
+        std::cout << "--------------------------------\n";                                         \
+        PRINT_BOUND(p.first, end);                                                                 \
+        PRINT_BOUND(p.second, end);                                                                \
+    }
+
 int main(void) {
 	typedef ft::map<int, std::string, std::less<int> > intmap;
+    typedef ft::map<std::string, std::string, std::less<std::string> > strmap;
 
 	ft::pair<int, std::string> intstr_arr[64]; 
 	init_array_int_str<void>(intstr_arr, 64); 
@@ -122,18 +170,71 @@ int main(void) {
 	(void)intstr_size;
 	(void)strstr_size;
 
- 	intmap m1;
-    intmap m2;
-    
-	m1 = m2;
+    intmap m(intstr_arr, intstr_arr + intstr_size);
 
-	PRINT_ALL(m1);
-    
-	m2 = intmap(intstr_arr, intstr_arr + intstr_size);
+        m.insert(ft::make_pair(34, "kljd9834iuhwet"));
+        m.insert(ft::make_pair(3468, "dfghe45sywu4hsr"));
+        m.insert(ft::make_pair(96533, "sdfghthrdfg5456ik"));
+        m.insert(ft::make_pair(89548945894, "jtt5454wujtjse"));
+        m.insert(ft::make_pair(7754322, "w4wt5u4wjhstrhj"));
+        m.insert(ft::make_pair(3632, "dfgjjkuy56ue5uwyhry5yeh"));
+        m.insert(ft::make_pair(3, "rtjey5w4u4u5e6kjwj5w4"));
+        m.insert(ft::make_pair(4, "asdfhfjgh54w3ag"));
+        m.insert(ft::make_pair(-873487, "jw56jw45jsryjsrt5u4w5"));
+        m.insert(ft::make_pair(-95763433, "ws45uhsrtjnsrths54yh"));
+        m.insert(ft::make_pair(453834782, "juytje54yaerdrj"));
+        m.insert(ft::make_pair(19458942, "j567uysdts56y6uj5r"));
+        m.insert(ft::make_pair(3245689793, "jr67e5674574668679789ruyerdtadh"));
 
-	PRINT_ALL(m1);
+        intmap::iterator b = m.lower_bound(98583944);
 
-    ft::map<int, std::string>::iterator it = m2.begin();
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(239485948);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(19458942);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(19458941);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(19458943);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(-1);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(3);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(4);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(5);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(0);
+
+        PRINT_BOUND(b, m.end());
+
+        b = m.lower_bound(std::numeric_limits<int>::max());
+
+        PRINT_BOUND(b, m.end());
+
+        m.insert(ft::make_pair(std::numeric_limits<int>::max(), "max"));
+
+        b = m.lower_bound(std::numeric_limits<int>::max());
+
+        PRINT_BOUND(b, m.end());
 
 	
 	return 0;

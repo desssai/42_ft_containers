@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 00:16:36 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/17 19:07:39 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/18 19:21:11 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,6 @@ public:
 	red_black_tree_iterator		operator ++ (void);
 	red_black_tree_iterator&	operator -- (int);
 	red_black_tree_iterator		operator -- (void);
-	
-	template <typename _T, typename _Node>
-	friend bool operator == (const red_black_tree_iterator<_T, _Node>& lhs, const red_black_tree_iterator<_T, _Node>& rhs);
-	template <typename _T, typename _Node>
-	friend bool operator != (const red_black_tree_iterator<_T, _Node>& lhs, const red_black_tree_iterator<_T, _Node>& rhs);
 
 	iterator	_base;
 	iterator	_null;
@@ -165,16 +160,6 @@ bool operator != (const red_black_tree_iterator<_T, _Node>& lhs, const red_black
 	return !(lhs._base == rhs._base);
 }
 
-template <typename _TL, typename _TR, typename _Node>
-bool operator == (const red_black_tree_iterator<_TL, _Node>& lhs, const red_black_tree_iterator<_TR, _Node>& rhs) {
-	return (lhs._base == rhs._base);
-}
-
-template <typename _TL, typename _TR, typename _Node>
-bool operator != (const red_black_tree_iterator<_TL, _Node>& lhs, const red_black_tree_iterator<_TR, _Node>& rhs) {
-	return !(lhs._base == rhs._base);
-}
-
 
 template <typename T, typename Node>
 class const_red_black_tree_iterator {
@@ -192,21 +177,16 @@ public:
 	const_red_black_tree_iterator(const const_red_black_tree_iterator& other);
 	~const_red_black_tree_iterator();
 
-	const_red_black_tree_iterator&	operator = (const const_red_black_tree_iterator& other);
-	const_red_black_tree_iterator&	operator = (const red_black_tree_iterator<T, Node>& other);
+	const_red_black_tree_iterator&		operator = (const const_red_black_tree_iterator& other);
+	const_red_black_tree_iterator&		operator = (const red_black_tree_iterator<T, Node>& other);
 
-	reference					operator * (void) const;
-	pointer						operator -> (void) const;
+	reference							operator * (void) const;
+	pointer								operator -> (void) const;
 
-	const_red_black_tree_iterator&	operator ++ (int);
+	const_red_black_tree_iterator&		operator ++ (int);
 	const_red_black_tree_iterator		operator ++ (void);
-	const_red_black_tree_iterator&	operator -- (int);
+	const_red_black_tree_iterator&		operator -- (int);
 	const_red_black_tree_iterator		operator -- (void);
-	
-	template <typename _T, typename _Node>
-	friend bool operator == (const const_red_black_tree_iterator<_T, _Node>& lhs, const const_red_black_tree_iterator<_T, _Node>& rhs);
-	template <typename _T, typename _Node>
-	friend bool operator != (const const_red_black_tree_iterator<_T, _Node>& lhs, const const_red_black_tree_iterator<_T, _Node>& rhs);
 
 	iterator	_base;
 	iterator	_null;
@@ -334,13 +314,25 @@ bool operator != (const const_red_black_tree_iterator<_T, _Node>& lhs, const con
 	return !(lhs._base == rhs._base);
 }
 
+
+
+template <typename _T, typename _Node>
+bool operator == (const red_black_tree_iterator<_T, _Node>& lhs, const const_red_black_tree_iterator<_T, _Node>& rhs) {
+	return (lhs._base == rhs._base);
+}
+
+template <typename _T, typename _Node>
+bool operator != (const red_black_tree_iterator<_T, _Node>& lhs, const const_red_black_tree_iterator<_T, _Node>& rhs) {
+	return !(lhs._base == rhs._base);
+}
+
 template <typename _TL, typename _TR, typename _Node>
-bool operator == (const const_red_black_tree_iterator<_TL, _Node>& lhs, const const_red_black_tree_iterator<_TR, _Node>& rhs) {
+bool operator == (const const_red_black_tree_iterator<_TL, _Node>& lhs, const red_black_tree_iterator<_TR, _Node>& rhs) {
 	return (lhs._base == rhs._base);
 }
 
 template <typename _TL, typename _TR, typename _Node>
-bool operator != (const const_red_black_tree_iterator<_TL, _Node>& lhs, const const_red_black_tree_iterator<_TR, _Node>& rhs) {
+bool operator != (const const_red_black_tree_iterator<_TL, _Node>& lhs, const red_black_tree_iterator<_TR, _Node>& rhs) {
 	return !(lhs._base == rhs._base);
 }
 
