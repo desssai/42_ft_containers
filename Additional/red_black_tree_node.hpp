@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/17 23:00:32 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/21 15:13:14 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ node<T>::~node() { }
 
 template <typename T>
 node<T>& node<T>::operator = (const node& other) {
-	value = other.value;
 	parent = other.parent;
 	left = other.left;
 	right = other.right;

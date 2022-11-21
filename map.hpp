@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 18:33:47 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/18 19:55:57 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/21 16:31:23 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,9 @@ public:
 	void								insert(InputIterator first, InputIterator last);
 	pair<iterator,bool>					insert(const value_type& val);
 	iterator							insert(iterator position, const value_type& val);
+	void								erase(iterator position);
+	size_type							erase(const key_type& k);
+    void								erase(iterator first, iterator last);
 	void								swap(map& x);
 	void								clear(void);
 
@@ -197,7 +200,7 @@ typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocat
 
 template <typename Key, typename T, typename Compare, typename Allocator>
 typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocator>::max_size(void) const {
-	return (std::min(static_cast<size_type>(std::numeric_limits<difference_type>::max()), this->_allocator.max_size()));
+	return _tree._alloc.max_size() > __LONG_LONG_MAX__ ? __LONG_LONG_MAX__ : _tree._alloc.max_size();
 }
 
 template <typename Key, typename T, typename Compare, typename Allocator>
@@ -242,6 +245,28 @@ ft::pair<typename map<Key, T, Compare, Allocator>::iterator, bool> map<Key, T, C
 template <typename Key, typename T, typename Compare, typename Allocator>
 typename map<Key, T, Compare, Allocator>::iterator map<Key, T, Compare, Allocator>::insert(iterator position, const value_type& val) {
 	return _tree.insert(position._base, val).first; 
+}
+
+template <typename Key, typename T, typename Compare, typename Allocator>
+void map<Key, T, Compare, Allocator>::erase(iterator position) {
+	_tree.erase(position._base);	
+}
+
+template <typename Key, typename T, typename Compare, typename Allocator>
+typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocator>::erase(const key_type& k) {
+	iterator	it = find(k);
+
+	if (it != end()) {
+		_tree.erase(it._base);
+		return 1;
+	}
+	return 0;
+}
+
+template <typename Key, typename T, typename Compare, typename Allocator>
+void map<Key, T, Compare, Allocator>::erase(iterator first, iterator last) {
+	for (; first != last; ++first)
+		_tree.erase(first._base);
 }
 
 template <typename Key, typename T, typename Compare, typename Allocator>

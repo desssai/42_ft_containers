@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:57:17 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/18 18:48:46 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/21 19:58:35 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,87 +155,26 @@ void init_array_str_str(ft::pair<std::string, std::string>* arr, std::size_t siz
         PRINT_BOUND(p.second, end);                                                                \
     }
 
+#define PRINT_INS_PAIR(p)                                                                          \
+    {                                                                                              \
+        PRINT_PAIR_REF(*p.first);                                                                  \
+        PRINT_LINE("Inserted:", p.second ? "true" : "false");                                      \
+    }
+
 int main(void) {
-	typedef ft::map<int, std::string, std::less<int> > intmap;
-    typedef ft::map<std::string, std::string, std::less<std::string> > strmap;
-
-	ft::pair<int, std::string> intstr_arr[64]; 
-	init_array_int_str<void>(intstr_arr, 64); 
-	ft::pair<std::string, std::string> strstr_arr[32]; 
-	init_array_str_str<void>(strstr_arr, 32); 
-	std::size_t intstr_size = 64;
-	std::size_t strstr_size = 32;
-	(void)intstr_arr;
-	(void)strstr_arr;
-	(void)intstr_size;
-	(void)strstr_size;
-
-    intmap m(intstr_arr, intstr_arr + intstr_size);
-
-        m.insert(ft::make_pair(34, "kljd9834iuhwet"));
-        m.insert(ft::make_pair(3468, "dfghe45sywu4hsr"));
-        m.insert(ft::make_pair(96533, "sdfghthrdfg5456ik"));
-        m.insert(ft::make_pair(89548945894, "jtt5454wujtjse"));
-        m.insert(ft::make_pair(7754322, "w4wt5u4wjhstrhj"));
-        m.insert(ft::make_pair(3632, "dfgjjkuy56ue5uwyhry5yeh"));
-        m.insert(ft::make_pair(3, "rtjey5w4u4u5e6kjwj5w4"));
-        m.insert(ft::make_pair(4, "asdfhfjgh54w3ag"));
-        m.insert(ft::make_pair(-873487, "jw56jw45jsryjsrt5u4w5"));
-        m.insert(ft::make_pair(-95763433, "ws45uhsrtjnsrths54yh"));
-        m.insert(ft::make_pair(453834782, "juytje54yaerdrj"));
-        m.insert(ft::make_pair(19458942, "j567uysdts56y6uj5r"));
-        m.insert(ft::make_pair(3245689793, "jr67e5674574668679789ruyerdtadh"));
-
-        intmap::iterator b = m.lower_bound(98583944);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(239485948);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(19458942);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(19458941);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(19458943);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(-1);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(3);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(4);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(5);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(0);
-
-        PRINT_BOUND(b, m.end());
-
-        b = m.lower_bound(std::numeric_limits<int>::max());
-
-        PRINT_BOUND(b, m.end());
-
-        m.insert(ft::make_pair(std::numeric_limits<int>::max(), "max"));
-
-        b = m.lower_bound(std::numeric_limits<int>::max());
-
-        PRINT_BOUND(b, m.end());
-
 	
+    ft::map<int, int> m1;
+
+    m1.insert(ft::make_pair(1, 1));
+    m1.insert(ft::make_pair(2, 1));
+    m1.insert(ft::make_pair(3, 1));
+    m1.insert(ft::make_pair(4, 1));
+    m1.insert(ft::make_pair(5, 1));
+    m1.insert(ft::make_pair(6, 1));
+    m1.insert(ft::make_pair(7, 1));
+    m1.insert(ft::make_pair(8, 1));
+
+    // m1.erase(5);
+    // std::cout << m1.size() << "\n";
 	return 0;
 }
