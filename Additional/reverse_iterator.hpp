@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 14:56:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/14 18:24:14 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/22 23:41:26 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ public:
 	typedef typename traits_type::pointer				pointer;
 
 	/* ASSIGNMENT */
-	
+
 	reverse_iterator();
 	explicit reverse_iterator(iterator_type it);
 	reverse_iterator(const reverse_iterator& other);
@@ -67,7 +67,6 @@ private:
 	/* ATTRIBUTES */
 
 	iterator_type	_base;
-
 };
 
 /* ASSIGNMENT START --> */
@@ -118,7 +117,8 @@ const typename reverse_iterator<Iterator>::iterator_type reverse_iterator<Iterat
 
 template <typename Iterator>
 typename reverse_iterator<Iterator>::reference reverse_iterator<Iterator>::operator * (void) const {
-	return *(_base - 1);
+	iterator_type	copy(_base);
+	return *(--copy);
 }
 
 template <typename Iterator>

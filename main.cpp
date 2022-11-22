@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:57:17 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/21 19:58:35 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/22 21:56:18 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,12 @@
 # include <stack>
 # include <vector>
 # include <map>
-namespace ft = std ;
+ft ft = std ;
 #else 
 # include "vector.hpp"
 # include "stack.hpp"
 # include "map.hpp"
 #endif
-
-
-template <typename It>
-void print_map(It first, It last)
-{
-    for (; first != last; ++first) {
-        std::cout << "K: " << first->first << " V: " << first->second << " ";
-    }
-    std::cout << std::endl;
-}
-
-#define PRINT_MAP(map)                                                                             \
-    {                                                                                              \
-        std::cout << "\nMap content:\n";                                                           \
-        print_map(map.begin(), map.end());                                                         \
-        std::cout << std::endl;                                                                    \
-    }
 
 #define PRINT_FILE_LINE()                                                                          \
     {                                                                                              \
@@ -57,9 +40,55 @@ void print_map(It first, It last)
         PRINT_FILE_LINE();                                                                         \
     }
 
+template <typename Iter>
+void print_range(Iter first, Iter last)
+{
+    for (Iter it = first; it != last; ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+}
+
+#define PRINT_SIZE(c)                                                                              \
+    {                                                                                              \
+        PRINT_LINE("Size:", c.size());                                                             \
+    }
+
+#define CATCH_UNHANDLED_EX()                                                                       \
+    catch (...)                                                                                    \
+    {                                                                                              \
+        std::cout << "unhandled exception";                                                        \
+        PRINT_FILE_LINE();                                                                         \
+    }
+
+template <typename ForwardIt, typename T>
+void iota(ForwardIt first, ForwardIt last, T value = T())
+{
+    while (first != last) {
+        *first++ = value;
+        ++value;
+    }
+}
+
+template <typename It>
+void print_map(It first, It last)
+{
+    for (; first != last; ++first) {
+        std::cout << "K: " << first->first << " V: " << first->second << " ";
+    }
+    std::cout << std::endl;
+}
+
+#define PRINT_MAP(map)                                                                             \
+    {                                                                                              \
+        std::cout << "\nMap content:\n";                                                           \
+        print_map(map.begin(), map.end());                                                         \
+        std::cout << std::endl;                                                                    \
+    }
+
 #define PRINT_ALL(map)                                                                             \
     {                                                                                              \
-        std::cout << map.size() << "\n";                                                           \
+        PRINT_SIZE(map);                                                                           \
         PRINT_MAP(map);                                                                            \
     }
 
@@ -138,6 +167,21 @@ void init_array_str_str(ft::pair<std::string, std::string>* arr, std::size_t siz
     }
 }
 
+#define SETUP_ARRAYS()                                                                             \
+    ft::pair<int, std::string> intstr_arr[64];                                              \
+    init_array_int_str<void>(intstr_arr, 64);                                                      \
+    ft::pair<std::string, std::string> strstr_arr[32];                                      \
+    init_array_str_str<void>(strstr_arr, 32);                                                      \
+    std::size_t intstr_size = 64;                                                                  \
+    std::size_t strstr_size = 32;                                                                  \
+    (void)intstr_arr;                                                                              \
+    (void)strstr_arr;                                                                              \
+    (void)intstr_size;                                                                             \
+    (void)strstr_size;
+
+typedef ft::map<int, std::string, std::less<int> > intmap;
+typedef ft::map<std::string, std::string, std::less<std::string> > strmap;
+
 #define PRINT_BOUND(b, end)                                                                        \
     {                                                                                              \
         if (b != end) {                                                                            \
@@ -155,26 +199,25 @@ void init_array_str_str(ft::pair<std::string, std::string>* arr, std::size_t siz
         PRINT_BOUND(p.second, end);                                                                \
     }
 
-#define PRINT_INS_PAIR(p)                                                                          \
-    {                                                                                              \
-        PRINT_PAIR_REF(*p.first);                                                                  \
-        PRINT_LINE("Inserted:", p.second ? "true" : "false");                                      \
-    }
 
 int main(void) {
-	
-    ft::map<int, int> m1;
+    SETUP_ARRAYS();
 
-    m1.insert(ft::make_pair(1, 1));
-    m1.insert(ft::make_pair(2, 1));
-    m1.insert(ft::make_pair(3, 1));
-    m1.insert(ft::make_pair(4, 1));
-    m1.insert(ft::make_pair(5, 1));
-    m1.insert(ft::make_pair(6, 1));
-    m1.insert(ft::make_pair(7, 1));
-    m1.insert(ft::make_pair(8, 1));
+    {
+        intmap m;
 
-    // m1.erase(5);
-    // std::cout << m1.size() << "\n";
-	return 0;
+        PRINT_ALL(m);
+
+        m.clear();
+
+        PRINT_ALL(m);
+
+        m.insert(intstr_arr, intstr_arr + 16);
+
+        PRINT_ALL(m);
+
+        m.clear();
+
+        PRINT_ALL(m);
+    }
 }

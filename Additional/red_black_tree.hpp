@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/22 17:58:56 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/22 23:43:59 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,19 +89,19 @@ private:
 
 	void								recursive_copy(link_type* dest, link_type src, link_type _null, link_type parent);
 
+	void								replace_node(link_type old_node, link_type new_node);
 	void								balance_after_insertion(link_type new_node);
 	void								balance_after_deletion(link_type new_node);
-
-	link_type							minimum(link_type node = nullptr) const;
-	link_type							maximum(link_type node = nullptr) const;
-	void								delete_node(link_type node);
-	void								clear_tree(link_type node);
-
 	void								right_rotate(link_type node);
 	void								left_rotate(link_type node);
 
-	void								link_borders(void);
+	void								delete_node(link_type node);
+	void								clear_tree(link_type node);
+
+	link_type							minimum(link_type node = nullptr) const;
+	link_type							maximum(link_type node = nullptr) const;
 	void								unlink_borders(void);
+	void								link_borders(void);
 };
 
 
@@ -134,7 +134,6 @@ red_black_tree<T, Compare, Allocator>& red_black_tree<T, Compare, Allocator>::op
 	clear();
 	_size = other._size;
 	_alloc = other._alloc;
-	_compare = other._compare;
 	recursive_copy(&_root, other._root, other._null, nullptr);
 	link_borders();
 	return *this;
@@ -186,19 +185,59 @@ typename red_black_tree<T, Compare, Allocator>::const_reverse_iterator red_black
 
 template <typename T, typename Compare, typename Allocator>
 ft::pair<typename red_black_tree<T, Compare, Allocator>::iterator, bool> red_black_tree<T, Compare, Allocator>::insert(link_type new_node, const value_type& value) {
-	(void)new_node;
-	(void)value;
+	link_type	parent = nullptr;
+	new_node = _root;
+
+	/* Find position for new_node */
+
+	unlink_borders();
+	while (new_node) {
+		parent = new_node;
+		if (_compare(value, new_node->value))
+			new_node = new_node->left;
+		else if (_compare(new_node->value, value))
+			new_node = new_node->right;
+		else if (!_compare(value, new_node->value) && !_compare(new_node->value, value)) {
+			link_borders();
+			return ft::make_pair(iterator(new_node, _null), false);
+		}
+	}
+
+	/* Create new_node if the same value doesn't exist */
+
+	new_node = _alloc.allocate(1);
+	_alloc.construct(new_node, value);
+
+	/* Assign new_node to its parent || root */
+
+	if (!_root)
+		_root = new_node;
+	else if (_compare(value, parent->value))
+		parent->left = new_node;
+	else if (_compare(parent->value, value))
+		parent->right = new_node;
+	new_node->parent = parent;
+
+	/* Rebalance the tree */
+
+	++_size;
+	balance_after_insertion(new_node);
+	link_borders();
+	return ft::make_pair(iterator(new_node, _null), true);
 }
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::erase(link_type node) {
+	unlink_borders();
 	(void)node;
+	link_borders();
 }
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::clear(void) {
-	clear_tree(_root);
 	unlink_borders();
+	clear_tree(_root);
+	_root = nullptr;
 	_size = 0;
 }
 
@@ -308,9 +347,8 @@ void red_black_tree<T, Compare, Allocator>::delete_node(link_type node) {
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::clear_tree(link_type node) {
-	if(!node || node == _null)
+	if(!node)
 		return ;
-	unlink_borders();
 	if (node->left)
 		clear_tree(node->left);
 	if (node->right)
@@ -364,7 +402,66 @@ void	red_black_tree<T, Compare, Allocator>::_M_check_branches(link_type start, i
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::balance_after_insertion(link_type new_node) {
-	(void)new_node;
+	link_type	uncle = nullptr;
+	
+	while (true) {
+		/* CASE 0: If node is root ==> color it black */
+
+		if (!new_node->parent) {
+			new_node->color = black;
+			break ;
+		}
+
+		/* CASE 1: If node parent is black ==> nothing is violated */
+
+		if (new_node->parent->color == black)
+			break ;
+
+		uncle = new_node->uncle();
+
+		/* CASE 3: If node's uncle's color is black or if it doesn't exist ==> perform a rotation */
+
+		if (!uncle || uncle->color == black) {
+			if (new_node->is_left_child()) {
+				if (new_node->parent->is_left_child()) {
+					new_node->parent->color = black;
+					new_node->parent->parent->color = red;
+					right_rotate(new_node->parent->parent);
+				}
+				else {
+					new_node->color = black;
+					new_node->parent->parent->color = red;
+					right_rotate(new_node->parent);
+					left_rotate(new_node->parent);
+				}
+			}
+			else {
+				if (new_node->parent->is_left_child()) {
+					new_node->color = black;
+					new_node->parent->parent->color = red;
+					left_rotate(new_node->parent);
+					right_rotate(new_node->parent);
+				}
+				else {
+					new_node->parent->color = black;
+					new_node->parent->parent->color = red;
+					left_rotate(new_node->parent->parent);
+				}
+			}
+			break ;
+		}
+
+		/* CASE 4: If node's uncle's color is red ==> change color of parent && uncle to red, change grandparent's color to red */
+
+		else if (uncle->color == red) {
+			uncle->color = black;
+			new_node->parent->color = black;
+			new_node->parent->parent->color = red;
+			new_node = new_node->parent->parent;
+		}
+
+		/* Check if the result of CASE 4 doesn't violate tree properties on next iterations */
+	}
 }
 
 template <typename T, typename Compare, typename Allocator>
@@ -374,12 +471,40 @@ void red_black_tree<T, Compare, Allocator>::balance_after_deletion(link_type nod
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::right_rotate(link_type node) {
-	(void)node;
+	link_type	left_node = node->left;
+
+    replace_node(node, left_node);
+    node->left = left_node->right;
+    if (left_node->right != NULL)
+        left_node->right->parent = node;
+    left_node->right = node;
+    node->parent = left_node;
 }
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::left_rotate(link_type node) {
-	(void)node;
+	link_type	right_node = node->right;
+
+    replace_node(node, right_node);
+    node->right = right_node->left;
+    if (right_node->left != NULL)
+        right_node->left->parent = node;
+    right_node->left = node;
+    node->parent = right_node;
+}
+
+template <typename T, typename Compare, typename Allocator>
+void red_black_tree<T, Compare, Allocator>::replace_node(link_type old_node, link_type new_node) {
+    if (old_node->parent == NULL)
+        _root = new_node;
+    else {
+        if (old_node == old_node->parent->left)
+            old_node->parent->left = new_node;
+        else
+            old_node->parent->right = new_node;
+    }
+    if (new_node != NULL)
+        new_node->parent = old_node->parent;
 }
 
 template <typename T, typename Compare, typename Allocator>

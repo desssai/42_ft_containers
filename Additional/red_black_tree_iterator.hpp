@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 00:16:36 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/18 19:21:11 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/22 22:31:10 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ public:
 	reference					operator * (void) const;
 	pointer						operator -> (void) const;
 
-	red_black_tree_iterator&	operator ++ (int);
-	red_black_tree_iterator		operator ++ (void);
-	red_black_tree_iterator&	operator -- (int);
-	red_black_tree_iterator		operator -- (void);
+	red_black_tree_iterator			operator ++ (int);
+	red_black_tree_iterator&		operator ++ (void);
+	red_black_tree_iterator			operator -- (int);
+	red_black_tree_iterator&		operator -- (void);
 
 	iterator	_base;
 	iterator	_null;
@@ -79,13 +79,7 @@ typename red_black_tree_iterator<T, Node>::pointer red_black_tree_iterator<T, No
 }
 
 template <typename T, typename Node>
-red_black_tree_iterator<T, Node>& red_black_tree_iterator<T, Node>::operator ++ (int) {
-	increment();	
-	return *this;
-}
-
-template <typename T, typename Node>
-red_black_tree_iterator<T, Node> red_black_tree_iterator<T, Node>::operator ++ (void) {
+red_black_tree_iterator<T, Node> red_black_tree_iterator<T, Node>::operator ++ (int) {
 	iterator	copy(_base);
 
 	increment();
@@ -93,17 +87,23 @@ red_black_tree_iterator<T, Node> red_black_tree_iterator<T, Node>::operator ++ (
 }
 
 template <typename T, typename Node>
-red_black_tree_iterator<T, Node>& red_black_tree_iterator<T, Node>::operator -- (int) {
-	decrement();
+red_black_tree_iterator<T, Node>& red_black_tree_iterator<T, Node>::operator ++ (void) {
+	increment();	
 	return *this;
 }
 
 template <typename T, typename Node>
-red_black_tree_iterator<T, Node> red_black_tree_iterator<T, Node>::operator -- (void) {
+red_black_tree_iterator<T, Node> red_black_tree_iterator<T, Node>::operator -- (int) {
 	iterator	copy(_base);
 
 	decrement();
 	return copy;
+}
+
+template <typename T, typename Node>
+red_black_tree_iterator<T, Node>& red_black_tree_iterator<T, Node>::operator -- (void) {
+	decrement();
+	return *this;
 }
 
 template <typename T, typename Node>
@@ -183,10 +183,10 @@ public:
 	reference							operator * (void) const;
 	pointer								operator -> (void) const;
 
-	const_red_black_tree_iterator&		operator ++ (int);
-	const_red_black_tree_iterator		operator ++ (void);
-	const_red_black_tree_iterator&		operator -- (int);
-	const_red_black_tree_iterator		operator -- (void);
+	const_red_black_tree_iterator&		operator ++ (void);
+	const_red_black_tree_iterator		operator ++ (int);
+	const_red_black_tree_iterator&		operator -- (void);
+	const_red_black_tree_iterator		operator -- (int);
 
 	iterator	_base;
 	iterator	_null;
@@ -233,13 +233,7 @@ typename const_red_black_tree_iterator<T, Node>::pointer const_red_black_tree_it
 }
 
 template <typename T, typename Node>
-const_red_black_tree_iterator<T, Node>& const_red_black_tree_iterator<T, Node>::operator ++ (int) {
-	increment();	
-	return *this;
-}
-
-template <typename T, typename Node>
-const_red_black_tree_iterator<T, Node> const_red_black_tree_iterator<T, Node>::operator ++ (void) {
+const_red_black_tree_iterator<T, Node> const_red_black_tree_iterator<T, Node>::operator ++ (int) {
 	iterator	copy(_base);
 
 	increment();
@@ -247,17 +241,23 @@ const_red_black_tree_iterator<T, Node> const_red_black_tree_iterator<T, Node>::o
 }
 
 template <typename T, typename Node>
-const_red_black_tree_iterator<T, Node>& const_red_black_tree_iterator<T, Node>::operator -- (int) {
-	decrement();
+const_red_black_tree_iterator<T, Node>& const_red_black_tree_iterator<T, Node>::operator ++ (void) {
+	increment();	
 	return *this;
 }
 
 template <typename T, typename Node>
-const_red_black_tree_iterator<T, Node> const_red_black_tree_iterator<T, Node>::operator -- (void) {
+const_red_black_tree_iterator<T, Node> const_red_black_tree_iterator<T, Node>::operator -- (int) {
 	iterator	copy(_base);
 
 	decrement();
 	return copy;
+}
+
+template <typename T, typename Node>
+const_red_black_tree_iterator<T, Node>& const_red_black_tree_iterator<T, Node>::operator -- (void) {
+	decrement();
+	return *this;
 }
 
 template <typename T, typename Node>

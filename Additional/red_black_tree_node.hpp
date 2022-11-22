@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/21 15:13:14 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/22 20:34:25 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 namespace ft
 {
 
+# include <iostream>
 
 enum node_color {red = true, black = false};
 
@@ -34,6 +35,12 @@ public:
 	~node();
 
 	node&		operator = (const node& other);
+	
+	bool		is_left_child(void) const;
+
+	link_type	grandparent(void);
+	link_type	sibling(void);
+	link_type	uncle(void);
 
 	value_type	value;
 	link_type	parent;
@@ -58,6 +65,38 @@ node<T>& node<T>::operator = (const node& other) {
 	right = other.right;
 	color = other.color;
 	return *this;
+}
+
+template <typename T>
+bool node<T>::is_left_child(void) const {
+	return (parent->left == this ? true : false);
+}
+
+template <typename T>
+typename node<T>::link_type node<T>::grandparent(void) {
+	link_type	copy = this;
+
+	if (copy->parent)
+		return copy->parent->parent;
+	return nullptr;
+}
+
+template <typename T>
+typename node<T>::link_type node<T>::sibling(void) {
+	link_type	copy = this;
+
+	if (copy->parent)
+		return (copy->parent->left == copy ? copy->parent->right : copy->parent->left);
+	return nullptr;
+}
+
+template <typename T>
+typename node<T>::link_type node<T>::uncle(void) {
+	link_type	copy = this;
+
+	if (copy->parent && copy->parent->parent)
+		return (copy->parent->parent->left == copy->parent ? copy->parent->parent->right : copy->parent->parent->left);
+	return nullptr;
 }
 
 
