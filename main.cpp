@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:57:17 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/22 21:56:18 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/23 23:23:23 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ template <typename It>
 void print_map(It first, It last)
 {
     for (; first != last; ++first) {
-        std::cout << "K: " << first->first << " V: " << first->second << " ";
+        std::cout << "K: " << first->first << " V: " << first->second << " C: " << first._base->color << "\n";
     }
     std::cout << std::endl;
 }
@@ -131,7 +131,7 @@ void init_array_int_str(ft::pair<int, std::string>* arr, std::size_t size)
                           "1IRLC9sfQI5AzDYeotLd" };
 
     for (std::size_t i = 0; i < size; ++i) {
-        arr[i] = ft::make_pair(rand(), x[i]);
+        arr[i] = ft::make_pair(rand() % 1000, x[i]);
     }
 }
 
@@ -203,21 +203,24 @@ typedef ft::map<std::string, std::string, std::less<std::string> > strmap;
 int main(void) {
     SETUP_ARRAYS();
 
-    {
-        intmap m;
+        intmap m(intstr_arr, intstr_arr + 10);
+
+        intmap::iterator it(m.begin());
+        intmap::iterator end(it);
+
+        std::advance(end, 1);
+
+        m.erase(it, end);
 
         PRINT_ALL(m);
 
-        m.clear();
+        it = m.begin();
+        end = it;
+        // std::advance(it, 2);
+        // std::advance(end, 8);
+
+		m.erase(it);
+		std::cout << end._base->value.first << std::endl;
 
         PRINT_ALL(m);
-
-        m.insert(intstr_arr, intstr_arr + 16);
-
-        PRINT_ALL(m);
-
-        m.clear();
-
-        PRINT_ALL(m);
-    }
 }

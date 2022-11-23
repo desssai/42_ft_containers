@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 18:33:47 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/22 22:03:01 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/23 23:57:07 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,9 @@ public:
 	void								insert(InputIterator first, InputIterator last);
 	pair<iterator,bool>					insert(const value_type& val);
 	iterator							insert(iterator position, const value_type& val);
-	// void								erase(iterator position);
-	// size_type							erase(const key_type& k);
-    // void								erase(iterator first, iterator last);
+	void								erase(iterator position);
+	size_type							erase(const key_type& k);
+    void								erase(iterator first, iterator last);
 	void								swap(map& x);
 	void								clear(void);
 
@@ -128,15 +128,16 @@ map<Key, T, Compare, Allocator>::map (const key_compare& comp, const allocator_t
 template <typename Key, typename T, typename Compare, typename Allocator>
 template <class InputIterator>
 map<Key, T, Compare, Allocator>::map(InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc) : _tree(comp, alloc) {
-	for (; first != last; ++first)
+	for (; first != last; ++first) {
+		// std::cout << (*first).first << std::endl;
 		_tree.insert(nullptr, *first);
+	}
 }
 
 template <typename Key, typename T, typename Compare, typename Allocator>
 map<Key, T, Compare, Allocator>::map(const map& other) : _tree(other._tree._compare, other._tree._alloc) {
-	for (const_iterator it1 = other.begin(), it2 = other.end(); it1 != it2; ++it1) {
+	for (const_iterator it1 = other.begin(), it2 = other.end(); it1 != it2; ++it1)
 		_tree.insert(nullptr, *it1);
-	}
 }
 
 template <typename Key, typename T, typename Compare, typename Allocator>
@@ -244,30 +245,38 @@ ft::pair<typename map<Key, T, Compare, Allocator>::iterator, bool> map<Key, T, C
 
 template <typename Key, typename T, typename Compare, typename Allocator>
 typename map<Key, T, Compare, Allocator>::iterator map<Key, T, Compare, Allocator>::insert(iterator position, const value_type& val) {
-	return _tree.insert(position._base, val).first; 
+	return _tree.insert(position._base, val).first;
 }
 
-// template <typename Key, typename T, typename Compare, typename Allocator>
-// void map<Key, T, Compare, Allocator>::erase(iterator position) {
-// 	_tree.erase(position._base);	
-// }
+template <typename Key, typename T, typename Compare, typename Allocator>
+void map<Key, T, Compare, Allocator>::erase(iterator position) {
+	_tree.erase(position._base);
+}
 
-// template <typename Key, typename T, typename Compare, typename Allocator>
-// typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocator>::erase(const key_type& k) {
-// 	iterator	it = find(k);
+template <typename Key, typename T, typename Compare, typename Allocator>
+typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocator>::erase(const key_type& k) {
+	iterator	it = find(k);
 
-// 	if (it != end()) {
-// 		_tree.erase(it._base);
-// 		return 1;
-// 	}
-// 	return 0;
-// }
+	if (it != end()) {
+		_tree.erase(it._base);
+		return 1;
+	}
+	return 0;
+}
 
-// template <typename Key, typename T, typename Compare, typename Allocator>
-// void map<Key, T, Compare, Allocator>::erase(iterator first, iterator last) {
-// 	for (; first != last; ++first)
-// 		_tree.erase(first._base);
-// }
+template <typename Key, typename T, typename Compare, typename Allocator>
+void map<Key, T, Compare, Allocator>::erase(iterator first, iterator last) {
+	size_type	arr_size = std::distance(first, last);
+	key_type*	array = new key_type [arr_size];
+
+	for (size_type i = 0; first != last; ++first, ++i) {
+		array[i] = first->first;
+	}
+	for (size_type i = 0; i < arr_size; ++i) {
+		erase(array[i]);
+	}
+	delete [] array;
+}
 
 template <typename Key, typename T, typename Compare, typename Allocator>
 void map<Key, T, Compare, Allocator>::swap(map& x) {

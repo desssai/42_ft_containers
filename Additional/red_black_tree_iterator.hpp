@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 00:16:36 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/22 22:31:10 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/23 23:13:19 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ template <typename T, typename Node>
 void red_black_tree_iterator<T, Node>::increment(void) {
 	if (_base == _null)
 		_base = _base->left;
-	else if (_base->right == _null)
+	else if (_null->right == _base)
 		_base = _null;
 	else if (_base->right) {
 		_base = _base->right;
@@ -132,7 +132,7 @@ template <typename T, typename Node>
 void red_black_tree_iterator<T, Node>::decrement(void) {
 	if (_base == _null)
 		_base = _base->right;
-	else if (_base->left == _null)
+	else if (_null->left == _base)
 		_base = _null;
 	else if (_base->left) {
 		_base = _base->left;

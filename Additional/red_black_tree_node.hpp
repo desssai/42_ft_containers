@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/22 20:34:25 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/23 20:06:11 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ public:
 	
 	bool		is_left_child(void) const;
 
+	link_type	distant_cousin(void);
+	link_type	close_cousin(void);
 	link_type	grandparent(void);
 	link_type	sibling(void);
 	link_type	uncle(void);
@@ -70,6 +72,30 @@ node<T>& node<T>::operator = (const node& other) {
 template <typename T>
 bool node<T>::is_left_child(void) const {
 	return (parent->left == this ? true : false);
+}
+
+template <typename T>
+typename node<T>::link_type node<T>::distant_cousin(void) {
+	link_type	sibl = sibling();
+
+	if (!sibl)
+		return nullptr;
+	else if (sibl->is_left_child())
+		return sibl->left;
+	else
+		return sibl->right;
+}
+
+template <typename T>
+typename node<T>::link_type node<T>::close_cousin(void) {
+	link_type	sibl = sibling();
+
+	if (!sibl)
+		return nullptr;
+	else if (sibl->is_left_child())
+		return sibl->right;
+	else
+		return sibl->left;
 }
 
 template <typename T>

@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/22 23:43:59 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/24 00:20:15 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ public:
 	const_reverse_iterator				rend() const;
 
 	ft::pair<iterator, bool>			insert(link_type new_node, const value_type& value);
-	void								erase(link_type node);
+	void								erase(iterator node);
 
 	void								clear(void);
 
@@ -89,9 +89,9 @@ private:
 
 	void								recursive_copy(link_type* dest, link_type src, link_type _null, link_type parent);
 
+	void								balance_and_delete(link_type new_node, link_type replacing_node);
 	void								replace_node(link_type old_node, link_type new_node);
 	void								balance_after_insertion(link_type new_node);
-	void								balance_after_deletion(link_type new_node);
 	void								right_rotate(link_type node);
 	void								left_rotate(link_type node);
 
@@ -227,10 +227,74 @@ ft::pair<typename red_black_tree<T, Compare, Allocator>::iterator, bool> red_bla
 }
 
 template <typename T, typename Compare, typename Allocator>
-void red_black_tree<T, Compare, Allocator>::erase(link_type node) {
+void red_black_tree<T, Compare, Allocator>::erase(iterator iter) {
+	link_type	replacing_node = nullptr;
+	link_type	buffer_node = nullptr;
+	link_type	node = iter._base;
+
+	/* Check if a node exists */
+
+	if (!node || node == _null)
+		return ;
+
 	unlink_borders();
-	(void)node;
+
+	/* Firtsly: perform BST deletion */
+
+	while (true) {
+
+		/* If node is a leaf node ==> replace it with null after balancing */
+
+		if (!node->left && !node->right) {
+			replacing_node = nullptr;
+			break ;
+		}
+
+		/* Else if node has only one child ==> replace the node with its child */
+
+		else if (!node->left) {
+			replacing_node = node->right;
+			break ;
+		}
+		else if (!node->right) {
+			replacing_node = node->left;
+			break ;
+		}
+
+		/* Else: node has both children ==> replace it with node's inorder successor */
+
+		else {
+			replacing_node = minimum(node->right);
+
+			/* Create a buffer node so as to store inorder successor's value */
+
+			buffer_node = _alloc.allocate(1);
+			_alloc.construct(buffer_node, *replacing_node);
+
+			/* Copy node's links and color to buffer node */
+
+			*buffer_node = *node;
+
+			/* Replace node's parent's and children's links so that they point to buffer node */
+	
+			replace_node(node, buffer_node);
+			if (buffer_node->left)
+				buffer_node->left->parent = buffer_node;
+			if (buffer_node->right)
+				buffer_node->right->parent = buffer_node;
+
+			/* Delete previous node with old value that was replaced */
+
+			delete_node(node);
+			node = replacing_node;
+
+			/* Assign replacing node to node so as to check if it has children for the deletion in the next iteration */
+		}
+	}
+	balance_and_delete(node, replacing_node);
+	_M_check_tree();
 	link_borders();
+	--_size;
 }
 
 template <typename T, typename Compare, typename Allocator>
@@ -248,28 +312,32 @@ typename red_black_tree<T, Compare, Allocator>::size_type red_black_tree<T, Comp
 
 template <typename T, typename Compare, typename Allocator>
 typename red_black_tree<T, Compare, Allocator>::iterator red_black_tree<T, Compare, Allocator>::find(const value_type& value) {
-	iterator it1 = begin();
-	iterator it2 = end();
+	link_type	curr = _root;
 	
-	while (it1 != it2) {
-		if (!_compare(*it1, value) && !_compare(value, *it1))
-			break ;
-		++it1;
+	while (curr && curr != _null) {
+		if (_compare(value, curr->value))
+			curr = curr->left;
+		else if (_compare(curr->value, value))
+			curr = curr->right;
+		else if (!_compare(curr->value, value) && !_compare(value, curr->value))
+			return iterator(curr, _null);
 	}
-	return it1;
+	return iterator(_null, _null);
 }
 
 template <typename T, typename Compare, typename Allocator>
 typename red_black_tree<T, Compare, Allocator>::const_iterator red_black_tree<T, Compare, Allocator>::find(const value_type& value) const {
-	const_iterator it1 = begin();
-	const_iterator it2 = end();
+	link_type	curr = _root;
 	
-	while (it1 != it2) {
-		if (!_compare(*it1, value) && !_compare(value, *it1))
-			break ;
-		++it1;
+	while (curr && curr != _null) {
+		if (_compare(value, curr->value))
+			curr = curr->left;
+		else if (_compare(curr->value, value))
+			curr = curr->right;
+		else if (!_compare(curr->value, value) && !_compare(value, curr->value))
+			return const_iterator(curr, _null);
 	}
-	return it1;
+	return const_iterator(_null, _null);
 }
 
 template <typename T, typename Compare, typename Allocator>
@@ -465,8 +533,120 @@ void red_black_tree<T, Compare, Allocator>::balance_after_insertion(link_type ne
 }
 
 template <typename T, typename Compare, typename Allocator>
-void red_black_tree<T, Compare, Allocator>::balance_after_deletion(link_type node) {
-	(void)node;
+void red_black_tree<T, Compare, Allocator>::balance_and_delete(link_type node, link_type replacing_node) {
+	link_type	sibling = nullptr;
+	link_type	red_cousin = nullptr;
+	link_type	close_cousin = nullptr;
+	link_type	distant_cousin = nullptr;
+
+	/* CASE 0: Node is _root && replacing node doesn't exist ==> delete _root and return */
+
+	// std::cout << node->value.first << std::endl;
+
+	if (node == _root && !replacing_node) {
+		delete_node(_root);
+		_root = nullptr;
+		return ;
+	}
+
+	/* CASE 1: If either node or replacing node is red (both can't be red) ==> mark replacing node as black */
+
+	if (node->color == red || (replacing_node && replacing_node->color == red)) {
+		replace_node(node, replacing_node);
+		if (replacing_node)
+			replacing_node->color = black;
+	}
+
+	/* CASE 2: If both node and replacing node are black */
+
+	else {
+		replacing_node = node;
+		while (true) {
+			/* If double black is root ==> simply break from the loop */
+
+			if (replacing_node == _root)
+				break ;
+
+			/* Assign pointers to nodes so as to use them with ease */
+
+			sibling = replacing_node->sibling();
+			close_cousin = replacing_node->close_cousin();
+			distant_cousin = replacing_node->distant_cousin();
+			if (distant_cousin && distant_cousin->color == red)
+				red_cousin = distant_cousin;
+			else if (close_cousin && close_cousin->color == red)
+				red_cousin = close_cousin;
+			else
+				red_cousin = nullptr;
+
+			/* CASE 2.1: Sibling is black && at least one child is red */
+
+			if (sibling->color == black && red_cousin) {
+				if (sibling->is_left_child()) {
+					if (red_cousin == distant_cousin) {
+						if (replacing_node->parent->color == red) {
+							replacing_node->parent->color = black;
+							sibling->color = red;
+						}
+						distant_cousin->color = black;
+						right_rotate(replacing_node->parent);
+						break ;
+					}
+					else {
+						close_cousin->color = black;
+						sibling->color = red;
+						left_rotate(sibling);
+					}
+				}
+				else {
+					if (red_cousin == close_cousin) {
+						close_cousin->color = black;
+						sibling->color = red;
+						right_rotate(sibling);
+					}
+					else {
+						if (replacing_node->parent->color == red) {
+							replacing_node->parent->color = black;
+							sibling->color = red;
+						}
+						red_cousin->color = black;
+						left_rotate(replacing_node->parent);
+						break ;
+					}
+				}
+			}
+
+			/* CASE 2.2: Sibling is black && both children are black */
+
+			else if (sibling->color == black && !red_cousin) {	
+				sibling->color = red;
+				if (replacing_node->parent->color == red) {
+					replacing_node->parent->color = black;
+					break ;
+				}
+				replacing_node = replacing_node->parent;
+			}
+
+			/* CASE 2.3: Sibling is red ==> rotate left or right && recolor sibling aand parent */
+
+			else if (sibling->color == red) {
+				replacing_node->parent->color = red;
+				sibling->color = black;
+				if (sibling->is_left_child())
+					right_rotate(replacing_node->parent);
+				else
+					left_rotate(replacing_node->parent);
+			}
+		}
+
+		/* Unlink and delete node after balancing */
+
+		if (node->is_left_child())
+			node->parent->left = nullptr;
+		else
+			node->parent->right = nullptr;
+	}
+	delete_node(node);
 }
 
 template <typename T, typename Compare, typename Allocator>
@@ -495,15 +675,15 @@ void red_black_tree<T, Compare, Allocator>::left_rotate(link_type node) {
 
 template <typename T, typename Compare, typename Allocator>
 void red_black_tree<T, Compare, Allocator>::replace_node(link_type old_node, link_type new_node) {
-    if (old_node->parent == NULL)
+    if (!old_node->parent)
         _root = new_node;
     else {
-        if (old_node == old_node->parent->left)
+        if (old_node->is_left_child())
             old_node->parent->left = new_node;
         else
             old_node->parent->right = new_node;
     }
-    if (new_node != NULL)
+    if (new_node)
         new_node->parent = old_node->parent;
 }
 
