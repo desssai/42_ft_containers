@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:12:45 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/23 20:06:11 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/24 18:13:11 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 
 namespace ft
 {
-
-# include <iostream>
 
 enum node_color {red = true, black = false};
 

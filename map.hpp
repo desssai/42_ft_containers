@@ -6,13 +6,14 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 18:33:47 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/23 23:57:07 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/11/24 18:33:33 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAP_H
 # define MAP_H
 
+# include "Additional/less.hpp"
 # include "Additional/equal.hpp"
 # include "Additional/red_black_tree.hpp"
 # include "Additional/lexicographical_compare.hpp"
@@ -21,7 +22,7 @@ namespace ft
 {
 
 
-template <typename Key, typename T, typename Compare = ft::less<T>, typename Allocator = std::allocator<ft::pair<const Key, T> > >
+template <typename Key, typename T, typename Compare = ft::less<Key>, typename Allocator = std::allocator<ft::pair<const Key, T> > >
 class map {
 
 public:
@@ -113,9 +114,7 @@ public:
 	pair<const_iterator,const_iterator>	equal_range(const key_type& k) const;
 	pair<iterator,iterator>				equal_range(const key_type& k);
 
-
-
-	allocator_type				get_allocator() const;
+	allocator_type						get_allocator() const;
 
 	private:
 		tree_type				_tree;
@@ -128,10 +127,8 @@ map<Key, T, Compare, Allocator>::map (const key_compare& comp, const allocator_t
 template <typename Key, typename T, typename Compare, typename Allocator>
 template <class InputIterator>
 map<Key, T, Compare, Allocator>::map(InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc) : _tree(comp, alloc) {
-	for (; first != last; ++first) {
-		// std::cout << (*first).first << std::endl;
+	for (; first != last; ++first)
 		_tree.insert(nullptr, *first);
-	}
 }
 
 template <typename Key, typename T, typename Compare, typename Allocator>
