@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/23 23:39:58 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/12/04 17:50:05 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -455,6 +455,7 @@ typename vector<T, Allocator>::iterator vector<T, Allocator>::insert (iterator p
 template <typename T, typename Allocator>
 typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(iterator position) {
 	difference_type	move_diff = (end() - position) - 1;
+
 	for (difference_type i = 0; i < move_diff; ++i)
 		*(position + i) = *(position + i + 1);
 	_alloc.destroy(&*(position + move_diff));
@@ -464,15 +465,21 @@ typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(iterator pos
 
 template <typename T, typename Allocator>
 typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(iterator first, iterator last) {
-	difference_type	move_diff = end() - last;
-	difference_type erase_diff = last - first;
-	for (difference_type i = 0; i < move_diff; ++i)
-		*(first + i) = *(last + i);
+	difference_type	move_diff = (end() - last);
+	difference_type	erase_diff =  last - first;
+
+	if (!erase_diff)
+		return last;
+	if (last != end()) {
+		for (difference_type i = 0; i < move_diff; ++i)
+			*(first + i) = *(last + i);
+	}
 	for (difference_type i = 0; i < erase_diff; ++i) {
 		_alloc.destroy(&*(first + move_diff + i));
 		--_size;
 	}
-	return (first + move_diff);
+	return first;
+	
 }
 
 template <typename T, typename Allocator>
