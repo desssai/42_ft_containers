@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 18:33:47 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/24 18:34:49 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/12/04 17:58:34 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ template <typename T, typename Compare = ft::less<T>, typename Allocator = std::
 class set {
 
 public:
+	/* MEMBER TYPES */
 
 	typedef	T																		key_type;
 	typedef	T																		value_type;
@@ -48,6 +49,8 @@ public:
 	typedef	std::ptrdiff_t															difference_type;
 	typedef	std::size_t																size_type;
 
+	/* ASSIGNMENT */
+
 	explicit set (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
 	template <class InputIterator>
 	set(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
@@ -55,6 +58,8 @@ public:
 	~set();
 
 	set& operator = (const set& other);
+
+	/* ITERATORS */
 
 	iterator							begin();
 	iterator							end();
@@ -65,9 +70,13 @@ public:
 	const_reverse_iterator				rbegin() const;
 	const_reverse_iterator				rend() const;
 
+	/* CAPACITY */
+
 	bool								empty() const;
 	size_type							size(void) const;
 	size_type							max_size(void) const;
+
+	/* MODIFIERS */
 
 	template <class InputIterator>
 	void								insert(InputIterator first, InputIterator last);
@@ -79,8 +88,12 @@ public:
 	void								swap(set& x);
 	void								clear(void);
 
+	/* COMPARISON OBJECTS */
+
 	key_compare							key_comp() const;
 	value_compare						value_comp() const;
+
+	/* ELEMENT ACCESS */
 
 	iterator							find(const key_type& k);
 	const_iterator						find(const key_type& k) const;
@@ -92,12 +105,15 @@ public:
 	pair<const_iterator,const_iterator>	equal_range(const key_type& k) const;
 	pair<iterator,iterator>				equal_range(const key_type& k);
 
+	/* ALLOCATOR */
+
 	allocator_type						get_allocator() const;
 
 	private:
 		tree_type				_tree;
 };
 
+/* CONSTRUCTORS AND DESTRUCTOR START --> */
 
 template <typename T, typename Compare, typename Allocator>
 set<T, Compare, Allocator>::set (const key_compare& comp, const allocator_type& alloc) : _tree(comp, alloc) { }
@@ -123,6 +139,10 @@ set<T, Compare, Allocator>& set<T, Compare, Allocator>::operator = (const set& o
 	_tree = other._tree;
 	return *this;
 }
+
+/* <-- CONSTRUCTORS AND DESTRUCTOR END */
+
+/* ITERATORS START --> */
 
 template <typename T, typename Compare, typename Allocator>
 typename set<T, Compare, Allocator>::iterator set<T, Compare, Allocator>::begin() {
@@ -164,6 +184,10 @@ typename set<T, Compare, Allocator>::const_reverse_iterator set<T, Compare, Allo
 	return _tree.rend();
 }
 
+/* <-- ITERATORS END */
+
+/* CAPACITY START --> */
+
 template <typename T, typename Compare, typename Allocator>
 bool set<T, Compare, Allocator>::empty() const {
 	return size() ? false : true;
@@ -178,6 +202,10 @@ template <typename T, typename Compare, typename Allocator>
 typename set<T, Compare, Allocator>::size_type set<T, Compare, Allocator>::max_size(void) const {
 	return _tree._alloc.max_size() > __LONG_LONG_MAX__ ? __LONG_LONG_MAX__ : _tree._alloc.max_size();
 }
+
+/* <-- CAPACITY END */
+
+/* MODIFIERS START --> */
 
 template <typename T, typename Compare, typename Allocator>
 template <class InputIterator>
@@ -240,6 +268,10 @@ void set<T, Compare, Allocator>::clear(void) {
 	_tree.clear();
 }
 
+/* <-- MODIFIERS END */
+
+/* COMPARISON OBJECTS START --> */
+
 template <typename T, typename Compare, typename Allocator>
 typename set<T, Compare, Allocator>::key_compare set<T, Compare, Allocator>::key_comp(void) const {
 	return key_compare();	
@@ -250,7 +282,9 @@ typename set<T, Compare, Allocator>::value_compare set<T, Compare, Allocator>::v
 	return value_compare();
 }
 
+/* <-- COMPARISON OBJECTS END */
 
+/* ELEMENT ACCESS START --> */
 
 template <typename T, typename Compare, typename Allocator>
 typename set<T, Compare, Allocator>::iterator set<T, Compare, Allocator>::find(const key_type& k) {
@@ -297,13 +331,18 @@ ft::pair<typename set<T, Compare, Allocator>::iterator, typename set<T, Compare,
 	return ft::make_pair(lower_bound(k), upper_bound(k));
 }
 
+/* <-- ELEMENT ACCESS END */
 
+/* ALLOCATOR START --> */
 
 template <typename T, typename Compare, typename Allocator>
 typename set<T, Compare, Allocator>::allocator_type set<T, Compare, Allocator>::get_allocator() const {
 	return allocator_type();
 }
 
+/* <-- ALLOCATOR END */
+
+/* NON-MEMBER FUNCTION OVERLOADS START --> */
 
 template <typename T, typename Compare, typename Allocator>
 bool operator	==	(const set<T, Compare, Allocator>& lhs, const set<T, Compare, Allocator>& rhs) {
@@ -342,6 +381,7 @@ void swap(set<T, Compare, Allocator>& lhs, set<T, Compare, Allocator>& rhs) {
 	lhs.swap(rhs);
 }
 
+/* <-- NON-MEMBER FUNCTION OVERLOADS END */
 
 
 } /* FT NAMESPACE */
