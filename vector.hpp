@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 17:55:27 by ncarob            #+#    #+#             */
-/*   Updated: 2022/12/04 17:50:05 by ncarob           ###   ########.fr       */
+/*   Updated: 2023/02/20 21:41:14 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include <memory>
 # include "Additional/equal.hpp"
-# include "Additional/enable_if.hpp"
 # include "Additional/is_integral.hpp"
 # include "Additional/iterator_traits.hpp"
 # include "Additional/vector_iterator.hpp"
@@ -31,18 +30,18 @@ class vector {
 public:
 	/* MEMBER TYPES */
 	
-	typedef Allocator													allocator_type;
-	typedef T															value_type;
-	typedef typename allocator_type::pointer							pointer;
-	typedef typename allocator_type::reference							reference;
-	typedef typename allocator_type::const_pointer						const_pointer;
-	typedef typename allocator_type::const_reference					const_reference;
-	typedef std::ptrdiff_t	 											difference_type;
-	typedef std::size_t 												size_type;
-	typedef ft::vector_iterator<pointer, vector>				iterator;
-	typedef ft::vector_iterator<const_pointer, vector>			const_iterator;
-	typedef ft::reverse_iterator<iterator>						reverse_iterator;
-	typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
+	typedef Allocator										allocator_type;
+	typedef T												value_type;
+	typedef typename allocator_type::pointer				pointer;
+	typedef typename allocator_type::reference				reference;
+	typedef typename allocator_type::const_pointer			const_pointer;
+	typedef typename allocator_type::const_reference		const_reference;
+	typedef std::ptrdiff_t	 								difference_type;
+	typedef std::size_t 									size_type;
+	typedef ft::vector_iterator<pointer, vector>			iterator;
+	typedef ft::vector_iterator<const_pointer, vector>		const_iterator;
+	typedef ft::reverse_iterator<iterator>					reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 
 	/* CONSTRUCTORS DESTRUCTORS + ASSIGNMENT OPERATOR */
 
@@ -116,10 +115,10 @@ public:
 private:
 	/* ATTRIBUTES */
 
-	size_type	_size;
-	Allocator	_alloc;
-	size_type	_capacity;
-	pointer		_pointer;
+	size_type		_size;
+	allocator_type	_alloc;
+	size_type		_capacity;
+	pointer			_pointer;
 
 	/* CONSTRUCTOR TEMPLATE OVERLOADING */
 

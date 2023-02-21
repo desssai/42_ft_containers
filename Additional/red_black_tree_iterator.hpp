@@ -6,14 +6,12 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 00:16:36 by ncarob            #+#    #+#             */
-/*   Updated: 2022/11/23 23:13:19 by ncarob           ###   ########.fr       */
+/*   Updated: 2023/02/20 21:33:16 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RED_BLACK_TREE_ITERATOR_H
 # define RED_BLACK_TREE_ITERATOR_H
-
-# include "enable_if.hpp"
 
 namespace ft
 {
@@ -39,10 +37,10 @@ public:
 	reference					operator * (void) const;
 	pointer						operator -> (void) const;
 
-	red_black_tree_iterator			operator ++ (int);
-	red_black_tree_iterator&		operator ++ (void);
-	red_black_tree_iterator			operator -- (int);
-	red_black_tree_iterator&		operator -- (void);
+	red_black_tree_iterator		operator ++ (int);
+	red_black_tree_iterator&	operator ++ (void);
+	red_black_tree_iterator		operator -- (int);
+	red_black_tree_iterator&	operator -- (void);
 
 	iterator	_base;
 	iterator	_null;
