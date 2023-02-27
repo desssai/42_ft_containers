@@ -16,7 +16,10 @@ inheritance and abstract classes. Every class and every method has the same nami
 2. Include the container's header file.
 ```
 # include "ft_containers/vector.hpp"
+# include "ft_containers/list.hpp"
 # include "ft_containers/stack.hpp"
+# include "ft_containers/deque.hpp"
+# include "ft_containers/queue.hpp"
 # include "ft_containers/map.hpp"
 # include "ft_containers/set.hpp"
 ```
@@ -35,6 +38,14 @@ in order to grow in size when new elements are inserted, which implies allocatin
 https://cplusplus.com/reference/vector/vector/ \
 https://en.cppreference.com/w/cpp/container/vector
 
+### List
+
+Lists are sequence containers that allow constant time insert and erase operations anywhere within the sequence, and iteration in both directions.
+List containers are implemented as doubly-linked lists; Doubly linked lists can store each of the elements they contain in different and unrelated storage locations. The ordering is kept internally by the association to each element of a link to the element preceding it and a link to the element following it. Compared to other base standard sequence containers (array, vector and deque), lists perform generally better in inserting, extracting and moving elements in any position within the container for which an iterator has already been obtained, and therefore also in algorithms that make intensive use of these, like sorting algorithms.
+
+https://cplusplus.com/reference/list/list/ \
+https://en.cppreference.com/w/cpp/container/list
+
 ### Stack
 
 Stacks are a type of container adaptor, specifically designed to operate in a LIFO context (last-in first-out),
@@ -46,6 +57,22 @@ instanciation.
 
 https://cplusplus.com/reference/stack/stack/ \
 https://en.cppreference.com/w/cpp/container/stack
+
+### Deque
+
+Deque is an irregular acronym of double-ended queue. Double-ended queues are sequence containers with dynamic sizes that can be expanded or contracted on both ends (either its front or its back). Both vectors and deques provide a very similar interface and can be used for similar purposes, but internally both work in quite different ways: While vectors use a single array that needs to be occasionally reallocated for growth, the elements of a deque can be scattered in different chunks of storage, with the container keeping the necessary information internally to provide direct access to any of its elements in constant time and with a uniform sequential interface (through iterators). Therefore, deques are a little more complex internally than vectors, but this allows them to grow more efficiently under certain circumstances, especially with very long sequences, where reallocations become more expensive.
+
+https://cplusplus.com/reference/deque/deque \
+https://en.cppreference.com/w/cpp/container/deque
+
+### Queue
+
+Queues are a type of container adaptor, specifically designed to operate in a FIFO context (first-in first-out), where elements are inserted into one end of the container and extracted from the other. Queues are implemented as containers adaptors, which are classes that use an encapsulated object of a specific container class as its underlying container, providing a specific set of member functions to access its elements. Elements are pushed into the "back" of the specific container and popped from its "front". The underlying container may
+be any of the standard container class templates or some other specifically designed container class.
+The container shall support the following methods: `empty()`, `size()`, `front()`, `back()`, `push_back()`, `pop_front().`
+
+https://cplusplus.com/reference/queue/queue/ \
+https://en.cppreference.com/w/cpp/container/queue
 
 ### Map
 
