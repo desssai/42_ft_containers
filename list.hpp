@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   list.hpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/23 02:17:20 by ncarob            #+#    #+#             */
+/*   Updated: 2023/02/23 18:30:25 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LIST_H
 # define LIST_H
 
@@ -14,11 +26,12 @@ namespace ft
 template <typename T>
 class list_node {
 public:
-	typedef T				value_type;
-	typedef list_node<T>*	link_type;
+	typedef T						value_type;
+	typedef list_node<value_type>*	link_type;
 
 	list_node(const value_type& val = value_type());
 	list_node(const list_node& other);
+	~list_node();
 
 	value_type	val;
 	link_type	prev;
@@ -30,6 +43,9 @@ list_node<T>::list_node(const value_type& _val) : val(_val), prev(nullptr), next
 
 template <typename T>
 list_node<T>::list_node(const list_node& other) : val(other.val), prev(nullptr), next(nullptr) {}
+
+template <typename T>
+list_node<T>::~list_node() { }
 
 
 template <typename T, typename Node>
@@ -75,8 +91,10 @@ list_iterator<T, Node>::~list_iterator() { }
 
 template <typename T, typename Node>
 list_iterator<T, Node>& list_iterator<T, Node>::operator = (const list_iterator& other) {
-	if (*this != other)
+	if (*this != other) {
 		_base = other.base();
+		_null = other.null();
+	}
 	return *this;
 }
 
